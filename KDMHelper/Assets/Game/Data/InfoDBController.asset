@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ddd2c758b84703440be27cbca1a37d50, type: 3}
+  m_Name: InfoDBController
+  m_EditorClassIdentifier: 
+  Sources:
+  - Name: Disorders
+    InfoCSVRef:
+      m_Asset: {fileID: 4900000, guid: 4195d6985b8d4b447a3ed187c45925cb, type: 3}
+      m_Info:
+        ReferenceType: 1
+        FilePath: Assets/Resources/Disorders.csv
+        Src: Disorders
+        Name: Disorders
+        SubAssetName: 
+        AssetTypeStr: UnityEngine.TextAsset, UnityEngine.CoreModule, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+  - Name: Fighting Arts
+    InfoCSVRef:
+      m_Asset: {fileID: 4900000, guid: 98b7d3d766a70144895c3443244d9c0f, type: 3}
+      m_Info:
+        ReferenceType: 1
+        FilePath: Assets/Resources/Fighting Arts.csv
+        Src: Fighting Arts
+        Name: Fighting Arts
+        SubAssetName: 
+        AssetTypeStr: UnityEngine.TextAsset, UnityEngine.CoreModule, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+  - Name: Innovations
+    InfoCSVRef:
+      m_Asset: {fileID: 4900000, guid: 8e39ba15a31d2454381e8cfdf94a921e, type: 3}
+      m_Info:
+        ReferenceType: 1
+        FilePath: Assets/Resources/Innovations.csv
+        Src: Innovations
+        Name: Innovations
+        SubAssetName: 
+        AssetTypeStr: UnityEngine.TextAsset, UnityEngine.CoreModule, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+  - Name: Gear
+    InfoCSVRef:
+      m_Asset: {fileID: 4900000, guid: 6f281947e3a7c2240bd937c4e3bdf16b, type: 3}
+      m_Info:
+        ReferenceType: 1
+        FilePath: Assets/Resources/Gear.csv
+        Src: Gear
+        Name: Gear
+        SubAssetName: 
+        AssetTypeStr: UnityEngine.TextAsset, UnityEngine.CoreModule, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
