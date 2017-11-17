@@ -8,9 +8,17 @@ namespace Game.Popup
     public class PopupDisplayElement : MonoBehaviour
     {
         [SerializeField]
+        private Text m_Label;
+        [SerializeField]
         private Text m_Content;
         [SerializeField]
         private Image m_Image;
+
+        public string Label
+        {
+            get { return m_Label != null ? m_Label.text : null; }
+            set { if (m_Label != null) m_Label.text = value; }
+        }
 
         public string Content
         {

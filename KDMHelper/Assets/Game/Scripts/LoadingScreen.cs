@@ -10,15 +10,19 @@ public class LoadingScreen : MonoBehaviour {
     public InfoDBController InfoDB;
     [SerializeField]
     private PopupDisplayList m_DisplayList;
-    private int m_LoadingFinished = 0;
+    [SerializeField]
+    private GameObject m_LoadingDisplay;
+    [SerializeField]
+    private GameObject m_MainDisplay;
 
-    private List<PopupDisplayElement> m_DisplayElements = new List<PopupDisplayElement>();
+    private int m_LoadingFinished = 0;
 
     private IEnumerator UpdateDisplayState(InfoDBSource infoSource)
     {
         infoSource.Load();
         var state = infoSource.State;
         var displayElement = m_DisplayList.Add(state.ToString());
+        displayElement.Label = infoSource.Name;
         while (state != InfoDBSource.EState.Ready)
         {
             while (state == infoSource.State)
@@ -32,27 +36,44 @@ public class LoadingScreen : MonoBehaviour {
         m_LoadingFinished++;
     }
 
-    // Use this for initialization
-    void Start () {
-        //instantiate
-        var temp = AssetReferenceUpdateRunner.Instance;
-        if (InfoDB.Sources != null)
+    private IEnumerator WaitToFinishLoading()
+    {
+        while (m_LoadingFinished < InfoDB.Sources.Count)
         {
-            int count = InfoDB.Sources.Count;
-            for(int i = 0; i < count; ++i)
-            {
-                StartCoroutine(UpdateDisplayState(InfoDB.Sources[i]));
-            }
+            yield return null;
         }
+
+        if(m_MainDisplay != null)
+        {
+            m_MainDisplay.SetActive(true);
+        }
+
+        if (m_LoadingDisplay != null) m_LoadingDisplay.SetActive(false);
+        if (m_MainDisplay != null) m_MainDisplay.SetActive(true);
     }
 
 
-	
-	// Update is called once per frame
-	void Update () {
-		if(m_LoadingFinished >= InfoDB.Sources.Count)
+    void Awake () {
+        //force instantiate AssetReferenceUpdateRunner on main thread
+        var temp = AssetReferenceUpdateRunner.Instance;
+        bool isLoading = false;
+
+        if (InfoDB.Sources != null)
         {
-            Debug.Log("Finished Loading");
+            int count = InfoDB.Sources.Count;
+            if (count > 0 && InfoDB.Sources[0].State == InfoDBSource.EState.Initial)
+            {
+                isLoading = true;
+                for (int i = 0; i < count; ++i)
+                {
+                    StartCoroutine(UpdateDisplayState(InfoDB.Sources[i]));
+                }
+                StartCoroutine(WaitToFinishLoading());
+            }
         }
-	}
+
+        if(m_LoadingDisplay != null) m_LoadingDisplay.SetActive(isLoading);
+        if(m_MainDisplay != null) m_MainDisplay.SetActive(!isLoading);
+    }
+    
 }

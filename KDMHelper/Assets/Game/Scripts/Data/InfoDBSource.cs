@@ -67,14 +67,6 @@ namespace Game.Data
             return null;
         }
 
-        public void StartLoad()
-        {
-            if (InfoCSVRef != null)
-            {
-                m_LoadHandle = InfoCSVRef.LoadAsset();
-            }
-        }
-
         public void LoadingFunc()
         {
             while (!m_LoadHandle.IsDone())
