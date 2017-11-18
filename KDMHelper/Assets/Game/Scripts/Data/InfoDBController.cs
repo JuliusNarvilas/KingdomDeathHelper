@@ -1,21 +1,26 @@
 ﻿
 using Common.Helpers;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace Game.Data
 {
 
     public class InfoDBController : ScriptableObject
     {
-        public List<InfoDBSource> Sources;
-
+#if UNITY_EDITOR
         [MenuItem("ScriptableObject/Create InfoDBController", false, 100)]
         public static void CreateAsset()
         {
             ScriptableObjectHelper.CreateAsset<InfoDBController>();
         }
+#endif
+
+        public List<InfoDBSource> Sources;
 
         public InfoDBSource Find(string name)
         {

@@ -81,6 +81,7 @@ namespace Common.IO
                             m_Actions[i].Invoke();
                         }
                     }
+                    m_Actions.Clear();
                 }
             }
         }

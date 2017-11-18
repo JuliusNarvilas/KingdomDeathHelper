@@ -3,6 +3,7 @@ using System.Collections;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
+using Common.Text;
 
 public class DisplayTransitionController : MonoBehaviour
 {
@@ -11,6 +12,8 @@ public class DisplayTransitionController : MonoBehaviour
     {
         public string Key;
         public Animator Anim;
+        public float SpeedIn = 1.0f;
+        public float SpeedOut = 1.0f;
 
         public bool Equals(DisplayTransitionRecord other)
         {
@@ -18,12 +21,26 @@ public class DisplayTransitionController : MonoBehaviour
         }
     }
 
-    [SerializeField]
-    private string m_TransitionInTriggerName = "TransitionIn";
-    private int m_TransitionInTriggerId;
-    [SerializeField]
-    private string m_TransitionOutTriggerName = "TransitionOut";
-    private int m_TransitionOutTriggerId;
+
+    private static string m_TransitionInTriggerName = "TransitionIn";
+    private static int m_TransitionInTriggerId;
+    private static string m_TransitionOutTriggerName = "TransitionOut";
+    private static int m_TransitionOutTriggerId;
+    private static string m_JumpInTriggerName = "JumpIn";
+    private static int m_JumpInTriggerId;
+    private static string m_JumpOutTriggerName = "JumpOut";
+    private static int m_JumpOutTriggerId;
+    private static string m_SpeedParameterName = "Speed";
+    private static int m_SpeedParameterId;
+
+    static DisplayTransitionController()
+    {
+        m_TransitionInTriggerId = Animator.StringToHash(m_TransitionInTriggerName);
+        m_TransitionOutTriggerId = Animator.StringToHash(m_TransitionOutTriggerName);
+        m_JumpInTriggerId = Animator.StringToHash(m_JumpInTriggerName);
+        m_JumpOutTriggerId = Animator.StringToHash(m_JumpOutTriggerName);
+        m_SpeedParameterId = Animator.StringToHash(m_SpeedParameterName);
+    }
 
     [SerializeField]
     private string m_DefaultDisplayKey;
@@ -31,11 +48,12 @@ public class DisplayTransitionController : MonoBehaviour
     private List<DisplayTransitionRecord> m_DisplayRecords = new List<DisplayTransitionRecord>();
 
     private DisplayTransitionRecord m_CurrentDisplay;
+    private DisplayTransitionRecord m_CurrentTarget;
     private Coroutine m_WaitCoroutine;
 
     private void OnValidate()
     {
-        if(m_DefaultDisplayKey != null)
+        if (m_DefaultDisplayKey != null)
         {
             var defaultMatch = m_DisplayRecords.FirstOrDefault((x) => { return x.Key == m_DefaultDisplayKey; });
             if(defaultMatch == null)
@@ -63,48 +81,83 @@ public class DisplayTransitionController : MonoBehaviour
 
     private void Awake()
     {
-        m_TransitionInTriggerId = Animator.StringToHash(m_TransitionInTriggerName);
-        m_TransitionOutTriggerId = Animator.StringToHash(m_TransitionOutTriggerName);
+        JumpTo(m_DefaultDisplayKey);
     }
 
-    private void Start()
+    private IEnumerator TransitionToCoroutine(string key, bool jumpTo = false)
     {
-        if (m_DefaultDisplayKey != null)
+        m_CurrentTarget = m_DisplayRecords.FirstOrDefault((x) => { return x.Key == key; });
+
+        if (m_CurrentDisplay != null)
         {
-            m_CurrentDisplay = m_DisplayRecords.FirstOrDefault((x) => { return x.Key == m_DefaultDisplayKey; });
-            if(m_CurrentDisplay != null)
+            if(!jumpTo)
             {
-                m_CurrentDisplay.Anim.SetTrigger(m_TransitionInTriggerId);
+                m_CurrentDisplay.Anim.SetFloat(m_SpeedParameterId, m_CurrentDisplay.SpeedOut);
+                m_CurrentDisplay.Anim.SetTrigger(m_TransitionOutTriggerId);
             }
-        }
-    }
-
-    private IEnumerator TransitionToCoroutine(string key)
-    {
-        if(m_CurrentDisplay != null)
-        {
-            m_CurrentDisplay.Anim.SetTrigger(m_TransitionOutTriggerId);
-            while (m_CurrentDisplay.Anim.GetCurrentAnimatorStateInfo(0).normalizedTime < 1.0f || m_CurrentDisplay.Anim.IsInTransition(0))
+            else
+            {
+                m_CurrentDisplay.Anim.SetTrigger(m_JumpOutTriggerId);
+            }
+            do
             {
                 yield return null;
-            }
+            } while (IsInTransition());
         }
 
-        m_CurrentDisplay = m_DisplayRecords.FirstOrDefault((x) => { return x.Key == key; });
-        if(m_CurrentDisplay != null)
+        m_CurrentDisplay = m_CurrentTarget;
+        m_CurrentTarget = null;
+        if (m_CurrentDisplay != null)
         {
-            m_CurrentDisplay.Anim.SetTrigger(m_TransitionInTriggerId);
+            if (!jumpTo)
+            {
+                m_CurrentDisplay.Anim.SetFloat(m_SpeedParameterId, m_CurrentDisplay.SpeedIn);
+                m_CurrentDisplay.Anim.SetTrigger(m_TransitionInTriggerId);
+            }
+            else
+            {
+                m_CurrentDisplay.Anim.SetTrigger(m_JumpInTriggerId);
+            }
+            //use m_WaitCoroutine to indicate end of transition in
+            do
+            {
+                yield return null;
+            } while (IsInTransition());
         }
-
+        
         m_WaitCoroutine = null;
+    }
+
+    public bool IsInTransition()
+    {
+        if (m_CurrentDisplay != null)
+        {
+            return m_CurrentDisplay.Anim.GetCurrentAnimatorStateInfo(0).normalizedTime < 1.0f || m_CurrentDisplay.Anim.IsInTransition(0);
+        }
+        return false;
     }
 
     public void TransitionTo(string key)
     {
-        if(m_WaitCoroutine != null)
+        if ((m_CurrentTarget == null && (m_CurrentDisplay == null || m_CurrentDisplay.Key != key)) || (m_CurrentTarget != null && m_CurrentTarget.Key != key))
         {
-            StopCoroutine(m_WaitCoroutine);
+            if (m_WaitCoroutine != null)
+            {
+                StopCoroutine(m_WaitCoroutine);
+            }
+            m_WaitCoroutine = StartCoroutine(TransitionToCoroutine(key));
         }
-        m_WaitCoroutine = StartCoroutine(TransitionToCoroutine(key));
+    }
+
+    public void JumpTo(string key)
+    {
+        if ((m_CurrentTarget == null && (m_CurrentDisplay == null || m_CurrentDisplay.Key != key)) || (m_CurrentTarget != null && m_CurrentTarget.Key != key))
+        {
+            if (m_WaitCoroutine != null)
+            {
+                StopCoroutine(m_WaitCoroutine);
+            }
+            m_WaitCoroutine = StartCoroutine(TransitionToCoroutine(key, true));
+        }
     }
 }

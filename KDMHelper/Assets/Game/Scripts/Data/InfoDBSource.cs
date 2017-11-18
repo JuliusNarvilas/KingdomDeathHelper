@@ -2,6 +2,7 @@
 using Common.Threading;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 namespace Game.Data
@@ -20,7 +21,9 @@ namespace Game.Data
 
         public string Name;
         public AssetReference InfoCSVRef;
-        private AssetReferenceLoadHandle m_LoadHandle;
+        private AssetReferenceLoadHandle m_ResourceLoadHandle;
+        private string m_ExternalFilePath;
+
         [NonSerialized]
         private EState m_State = EState.Initial;
         public EState State { get { return m_State; } }
@@ -31,6 +34,17 @@ namespace Game.Data
         public string[] ColumnNames { get { return m_ColumnNames; } }
         private InfoDBColumn[] m_Columns;
         private IThreadPoolTaskHandle m_LoadTaskHandle;
+
+
+        public void Reset()
+        {
+            m_ResourceLoadHandle = null;
+            m_ExternalFilePath = null;
+            m_State = EState.Initial;
+            m_ColumnNames = null;
+            m_Columns = null;
+            m_LoadTaskHandle = null;
+        }
 
         public InfoDBColumn GetColumn(string name)
         {
@@ -67,37 +81,95 @@ namespace Game.Data
             return null;
         }
 
+        private bool TryGetVersionNumber(string fileContent, out int version)
+        {
+            char[] endChars = { ',', '\t', '\r', '\n' };
+
+            version = 0;
+            int lineEnd = fileContent.IndexOfAny(endChars);
+            if (lineEnd >= 0)
+            {
+                if (int.TryParse(fileContent.Substring(0, lineEnd), out version))
+                {
+                    return true;
+                }
+            }
+            m_Error = "Can not find version number in resource file.";
+            return false;
+        }
+
         public void LoadingFunc()
         {
-            while (!m_LoadHandle.IsDone())
+            int defaultVersionNumber = 0;
+            int externalVersionNumber = 0;
+            string finalAssetText = null;
+            string externalAssetText = null;
+
+            //first load from resources
+            while (!m_ResourceLoadHandle.IsDone())
             {
                 System.Threading.Thread.Sleep(20);
             }
-
+            var asset = m_ResourceLoadHandle.GetAsset<TextAsset>();
             m_Error = "Asset Not Found";
-            var asset = m_LoadHandle.GetAsset<TextAsset>();
-            if (asset != null)
+            if (asset == null)
             {
-                string assetText = null;
-                AssetReferenceUpdateRunner.Instance.AddAction(() => { assetText = asset.text; });
-
-                while(assetText == null)
-                {
-                    System.Threading.Thread.Sleep(20);
-                }
-
-                m_State = EState.Parsing;
-                fgCSVReader.LoadFromString(assetText, new fgCSVReader.ReadLineDelegate(ReadLineFunc));
-                bool goodParse = m_Columns != null && m_Columns.Length > 0 && m_Columns[0].Content.Count > 0;
-                if (!goodParse)
-                {
-                    m_Error = "Asset Data Invalid (Parse Error)!";
-                }
-                else
-                {
-                    m_Error = null;
-                }
+                return;
             }
+
+            AssetReferenceUpdateRunner.Instance.AddAction(() => { var temp = asset.text; m_ResourceLoadHandle.Dispose(); finalAssetText = temp; });
+            //wait for read from other thread
+            while (finalAssetText == null)
+            {
+                System.Threading.Thread.Sleep(20);
+            }
+            m_ResourceLoadHandle = null;
+
+
+            if (!TryGetVersionNumber(finalAssetText, out defaultVersionNumber))
+            {
+                return;
+            }
+
+            if (File.Exists(m_ExternalFilePath))
+            {
+#if !UNITY_EDITOR
+                externalAssetText = File.ReadAllText(m_ExternalFilePath);
+                if(!TryGetVersionNumber(externalAssetText, out externalVersionNumber))
+                {
+                    return;
+                }
+#endif
+            }
+
+            if (externalVersionNumber < 0 || externalVersionNumber >= defaultVersionNumber)
+            {
+                finalAssetText = externalAssetText;
+            }
+            else
+            {
+#if !UNITY_EDITOR
+                int lastSeperator = m_ExternalFilePath.LastIndexOf('/');
+                var directory = m_ExternalFilePath.Substring(0, lastSeperator);
+                DirectoryInfo target = new DirectoryInfo(directory);
+                if(!target.Exists)
+                {
+                    target.Create();
+                }
+                File.WriteAllText(m_ExternalFilePath, finalAssetText);
+#endif
+            }
+
+            m_State = EState.Parsing;
+            fgCSVReader.LoadFromString(finalAssetText, new fgCSVReader.ReadLineDelegate(ReadLineFunc));
+            bool goodParse = m_Columns != null && m_Columns.Length > 0 && m_Columns[0].Content.Count > 0;
+            if (!goodParse)
+            {
+                m_Error = "Asset Data Invalid (Parse Error)!";
+                return;
+            }
+
+            m_Error = null;
             m_State = EState.Ready;
         }
 
@@ -106,14 +178,20 @@ namespace Game.Data
             if (State == EState.Initial)
             {
                 m_State = EState.Loading;
-                m_LoadHandle = InfoCSVRef.LoadAsset();
+
+                m_ExternalFilePath = string.Format("{0}/{1}", Application.persistentDataPath, InfoCSVRef.GetInfo().FilePath);
+                m_ResourceLoadHandle = InfoCSVRef.LoadAsset();
                 m_LoadTaskHandle = ThreadPool.Instance.AddTask(LoadingFunc);
             }
         }
 
         private void ReadLineFunc(int line_index, List<string> line)
         {
-            if (line_index == 0)
+            if(line_index == 0)
+            {
+                //skip version number
+            }
+            else if (line_index == 1)
             {
                 m_ColumnNames = line.ToArray();
                 m_Columns = new InfoDBColumn[m_ColumnNames.Length];

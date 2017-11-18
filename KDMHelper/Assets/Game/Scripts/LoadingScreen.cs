@@ -11,9 +11,7 @@ public class LoadingScreen : MonoBehaviour {
     [SerializeField]
     private PopupDisplayList m_DisplayList;
     [SerializeField]
-    private GameObject m_LoadingDisplay;
-    [SerializeField]
-    private GameObject m_MainDisplay;
+    private DisplayTransitionController m_DisplayController;
 
     private int m_LoadingFinished = 0;
 
@@ -42,28 +40,20 @@ public class LoadingScreen : MonoBehaviour {
         {
             yield return null;
         }
-
-        if(m_MainDisplay != null)
-        {
-            m_MainDisplay.SetActive(true);
-        }
-
-        if (m_LoadingDisplay != null) m_LoadingDisplay.SetActive(false);
-        if (m_MainDisplay != null) m_MainDisplay.SetActive(true);
+        
+        m_DisplayController.TransitionTo("Main");
     }
 
 
     void Awake () {
         //force instantiate AssetReferenceUpdateRunner on main thread
         var temp = AssetReferenceUpdateRunner.Instance;
-        bool isLoading = false;
 
         if (InfoDB.Sources != null)
         {
             int count = InfoDB.Sources.Count;
             if (count > 0 && InfoDB.Sources[0].State == InfoDBSource.EState.Initial)
             {
-                isLoading = true;
                 for (int i = 0; i < count; ++i)
                 {
                     StartCoroutine(UpdateDisplayState(InfoDB.Sources[i]));
@@ -72,8 +62,7 @@ public class LoadingScreen : MonoBehaviour {
             }
         }
 
-        if(m_LoadingDisplay != null) m_LoadingDisplay.SetActive(isLoading);
-        if(m_MainDisplay != null) m_MainDisplay.SetActive(!isLoading);
+        m_DisplayController.TransitionTo("Loading");
     }
     
 }
