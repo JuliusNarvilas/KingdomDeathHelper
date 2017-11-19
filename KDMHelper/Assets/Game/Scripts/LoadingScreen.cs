@@ -1,5 +1,6 @@
 ﻿using Common.IO;
-using Game.Data;
+using Game.IO.InfoDB;
+using Game.Model;
 using Game.Popup;
 using System.Collections;
 using System.Collections.Generic;
@@ -28,6 +29,11 @@ public class LoadingScreen : MonoBehaviour {
                 yield return null;
             }
             state = infoSource.State;
+            if(state == InfoDBSource.EState.Errored)
+            {
+                displayElement.Content = string.Format("{0}: {1}", state.ToString(), infoSource.Error);
+                yield break;
+            }
             displayElement.Content = state.ToString();
         }
 
