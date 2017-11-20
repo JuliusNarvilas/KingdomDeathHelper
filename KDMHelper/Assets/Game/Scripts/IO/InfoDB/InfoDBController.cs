@@ -22,10 +22,23 @@ namespace Game.IO.InfoDB
 
         public List<InfoDBSource> Sources;
 
+        public void Reset()
+        {
+            int count = Sources.Count;
+            for (int i = 0; i < count; ++i)
+            {
+                if (Sources[i] != null)
+                {
+                    Sources[i].Reset();
+                }
+            }
+        }
+
         public InfoDBSource Find(string name)
         {
             InfoDBSource result = null;
-            for (int i = 0; i < Sources.Count; ++i)
+            int count = Sources.Count;
+            for (int i = 0; i < count; ++i)
             {
                 if (Sources[i].Name == name)
                 {
