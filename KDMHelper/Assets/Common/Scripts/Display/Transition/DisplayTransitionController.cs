@@ -67,7 +67,7 @@ namespace Common.Display.Transition
         private EState m_State;
         public EState State { get { return m_State; } }
 
-        private Coroutine m_WaitCoroutine;
+        private Coroutine m_TransitionCoroutine;
 
 
         private DisplayTransitionTarget m_CurrentDisplay;
@@ -148,7 +148,7 @@ namespace Common.Display.Transition
                 }
             }
             m_State = EState.Ready;
-            m_WaitCoroutine = null;
+            m_TransitionCoroutine = null;
         }
 
         public bool IsInTransition()
@@ -335,11 +335,11 @@ namespace Common.Display.Transition
                 m_Transition.TransitionOutSpeed = i_TransitionOutSpeed;
                 m_Transition.TransitionInSpeed = i_TransitionInSpeed;
 
-                if (m_WaitCoroutine != null)
+                if (m_TransitionCoroutine != null)
                 {
-                    StopCoroutine(m_WaitCoroutine);
+                    StopCoroutine(m_TransitionCoroutine);
                 }
-                m_WaitCoroutine = StartCoroutine(TransitionRunner());
+                m_TransitionCoroutine = StartCoroutine(TransitionRunner());
             }
         }
     }
