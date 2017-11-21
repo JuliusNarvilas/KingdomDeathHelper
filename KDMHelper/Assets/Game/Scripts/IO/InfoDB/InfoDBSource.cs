@@ -1,4 +1,5 @@
-﻿using Common.Threading;
+﻿using Common;
+using Common.Threading;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -152,6 +153,8 @@ namespace Game.IO.InfoDB
                 m_State = EState.Errored;
                 return;
             }
+
+            Log.DebugLog("Finished loading {0}.", m_ExternalFilePath);
 
             m_FinalContent = null;
             m_Error = null;

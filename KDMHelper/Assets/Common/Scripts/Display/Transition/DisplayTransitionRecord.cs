@@ -11,8 +11,6 @@ namespace Common.Display.Transition
     {
         public string Key;
         public Animator Anim;
-        public float SpeedIn = 1.0f;
-        public float SpeedOut = 1.0f;
 
         public bool Equals(DisplayTransitionTarget other)
         {

@@ -3,7 +3,6 @@ using System.Collections;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
-using Common.Text;
 
 namespace Common.Display.Transition
 {
@@ -23,24 +22,37 @@ namespace Common.Display.Transition
             Cut
         }
 
-        private static string m_TransitionInTriggerName = "TransitionIn";
-        private static int m_TransitionInTriggerId;
-        private static string m_TransitionOutTriggerName = "TransitionOut";
-        private static int m_TransitionOutTriggerId;
-        private static string m_JumpInTriggerName = "JumpIn";
-        private static int m_JumpInTriggerId;
-        private static string m_JumpOutTriggerName = "JumpOut";
-        private static int m_JumpOutTriggerId;
-        private static string m_SpeedParameterName = "Speed";
-        private static int m_SpeedParameterId;
+        private struct DisplayTransition
+        {
+            public DisplayTransitionTarget Target;
+            public ETransitionType TransitionOutType;
+            public ETransitionType TransitionInType;
+            public float TransitionOutSpeed;
+            public float TransitionInSpeed;
+        }
+
+        private static string s_TransitionInTriggerName = "FadeIn";
+        private static int s_TransitionInTriggerId;
+        private static string s_TransitionOutTriggerName = "FadeOut";
+        private static int s_TransitionOutTriggerId;
+        private static string s_CutInTriggerName = "CutIn";
+        private static int s_CutInTriggerId;
+        private static string s_CutOutTriggerName = "CutOut";
+        private static int s_CutOutTriggerId;
+        private static string s_SpeedMultiplierParameterName = "SpeedMultiplier";
+        private static int s_SpeedMultiplierParameterId;
+
+        public const float SLOW_SPEED_MULTIPLIER = 0.5f;
+        public const float DEFAULT_SPEED_MULTIPLIER = 1.0f;
+        public const float FAST_SPEED_MULTIPLIER = 2.0f;
 
         static DisplayTransitionController()
         {
-            m_TransitionInTriggerId = Animator.StringToHash(m_TransitionInTriggerName);
-            m_TransitionOutTriggerId = Animator.StringToHash(m_TransitionOutTriggerName);
-            m_JumpInTriggerId = Animator.StringToHash(m_JumpInTriggerName);
-            m_JumpOutTriggerId = Animator.StringToHash(m_JumpOutTriggerName);
-            m_SpeedParameterId = Animator.StringToHash(m_SpeedParameterName);
+            s_TransitionInTriggerId = Animator.StringToHash(s_TransitionInTriggerName);
+            s_TransitionOutTriggerId = Animator.StringToHash(s_TransitionOutTriggerName);
+            s_CutInTriggerId = Animator.StringToHash(s_CutInTriggerName);
+            s_CutOutTriggerId = Animator.StringToHash(s_CutOutTriggerName);
+            s_SpeedMultiplierParameterId = Animator.StringToHash(s_SpeedMultiplierParameterName);
         }
 
         [SerializeField]
@@ -48,19 +60,16 @@ namespace Common.Display.Transition
         [SerializeField]
         private List<DisplayTransitionTarget> m_DisplayRecords = new List<DisplayTransitionTarget>();
 
-
-        private DisplayTransitionTarget m_TransitionDisplay;
         private DisplayTransitionTarget m_CurrentTarget;
-        private Coroutine m_WaitCoroutine;
+        private DisplayTransition m_Transition;
+        private DisplayTransition m_NextTransition;
+
         private EState m_State;
         public EState State { get { return m_State; } }
-        private ETransitionType m_TransitionOutType;
-        private ETransitionType m_TransitionInType;
+
+        private Coroutine m_WaitCoroutine;
 
 
-
-        private DisplayTransitionTarget m_TransitionOutTarget;
-        private DisplayTransitionTarget m_TransitionInTarget;
         private DisplayTransitionTarget m_CurrentDisplay;
 
         private void OnValidate()
@@ -73,180 +82,264 @@ namespace Common.Display.Transition
                     m_DefaultDisplayKey = null;
                 }
             }
-
-            /*
-            for (int i = 0; i < (m_DisplayRecords.Count - 1); ++i)
-            {
-                var record = m_DisplayRecords[i];
-                int match = -1;
-                do
-                {
-                    match = m_DisplayRecords.LastIndexOf(record, i + 1);
-                    if (match > i)
-                    {
-                        m_DisplayRecords.RemoveAt(match);
-                    }
-                } while (match > i);
-            }
-            */
         }
 
         private void Awake()
         {
-            JumpTo(m_DefaultDisplayKey);
+            TransitionFromCutToCut(m_DefaultDisplayKey);
         }
 
-        private IEnumerator TransitionToCoroutine(string key, bool jumpTo = false)
+        private IEnumerator TransitionRunner()
         {
-            /*
-            if (oldTransition != null)
+            bool process = true;
+            while(process)
             {
-                //wait for old transition to finish
-                yield return oldTransition;
-            }
-            */
-
-            //Debug.Log("Transition to " + key + " jump = " + jumpTo.ToString());
-            m_CurrentTarget = m_DisplayRecords.FirstOrDefault((x) => { return x.Key == key; });
-
-            if (m_CurrentDisplay != null)
-            {
-                if (!jumpTo)
+                if (m_CurrentDisplay != m_Transition.Target && m_CurrentDisplay != null)
                 {
-                    m_CurrentDisplay.Anim.SetFloat(m_SpeedParameterId, m_CurrentDisplay.SpeedOut);
-                    m_CurrentDisplay.Anim.SetTrigger(m_TransitionOutTriggerId);
-                    Debug.Log("transition out " + m_CurrentDisplay.Anim.gameObject.name + " " + m_CurrentDisplay.Key + " " + key);
+                    m_State = EState.TransitionOut;
+
+                    if (m_Transition.TransitionOutType == ETransitionType.Cut)
+                    {
+                        m_CurrentDisplay.Anim.SetTrigger(s_CutOutTriggerId);
+                    }
+                    else
+                    {
+                        m_CurrentDisplay.Anim.SetFloat(s_SpeedMultiplierParameterId, m_Transition.TransitionOutSpeed);
+                        m_CurrentDisplay.Anim.SetTrigger(s_TransitionOutTriggerId);
+                    }
+
+                    do
+                    {
+                        yield return null;
+                    } while (IsInTransition());
+                }
+
+                m_CurrentDisplay = m_Transition.Target;
+                if (m_CurrentDisplay != null)
+                {
+                    m_State = EState.TransitionIn;
+
+                    if (m_Transition.TransitionInType == ETransitionType.Cut)
+                    {
+                        m_CurrentDisplay.Anim.SetTrigger(s_CutInTriggerId);
+                    }
+                    else
+                    {
+                        m_CurrentDisplay.Anim.SetFloat(s_SpeedMultiplierParameterId, m_Transition.TransitionInSpeed);
+                        m_CurrentDisplay.Anim.SetTrigger(s_TransitionInTriggerId);
+                    }
+
+                    do
+                    {
+                        yield return null;
+                    } while (IsInTransition());
+                }
+
+
+                if(m_NextTransition.Target != null)
+                {
+                    process = true;
+                    m_Transition = m_NextTransition;
+                    m_NextTransition.Target = null;
                 }
                 else
                 {
-                    m_CurrentDisplay.Anim.SetTrigger(m_JumpOutTriggerId);
-                    Debug.Log("jump out " + m_CurrentDisplay.Anim.gameObject.name + " " + m_CurrentDisplay.Key + " " + key);
+                    process = false;
                 }
             }
-            //Debug.Log("Current display set " + key + " jump = " + jumpTo.ToString());
-            Debug.Log(key + " 1");
-            m_TransitionDisplay = m_CurrentDisplay;
-            m_CurrentDisplay = m_CurrentTarget;
-            m_CurrentTarget = null;
-
-            Debug.Log(key + " 2");
-            do
-            {
-                yield return null;
-            } while (IsInTransition());
-            Debug.Log(key + " 3");
-
-            m_TransitionDisplay = m_CurrentDisplay;
-
-            if (m_CurrentDisplay != null)
-            {
-                if (!jumpTo)
-                {
-                    m_CurrentDisplay.Anim.SetFloat(m_SpeedParameterId, m_CurrentDisplay.SpeedIn);
-                    m_CurrentDisplay.Anim.SetTrigger(m_TransitionInTriggerId);
-                    Debug.Log("transition in " + m_CurrentDisplay.Anim.gameObject.name + " " + m_CurrentDisplay.Key + " " + key);
-                }
-                else
-                {
-                    m_CurrentDisplay.Anim.SetTrigger(m_JumpInTriggerId);
-                    Debug.Log("jump in " + m_CurrentDisplay.Anim.gameObject.name + " " + m_CurrentDisplay.Key + " " + key);
-                }
-                //use m_WaitCoroutine to indicate end of transition in
-                Debug.Log(key + " 4");
-                do
-                {
-                    yield return null;
-                } while (IsInTransition());
-            }
-            Debug.Log(key + " 5");
-
+            m_State = EState.Ready;
             m_WaitCoroutine = null;
         }
 
         public bool IsInTransition()
         {
-            try
+            if (m_CurrentDisplay != null && m_CurrentDisplay.Anim != null)
             {
-                if (m_TransitionDisplay != null)
-                {
-                    return m_TransitionDisplay.Anim.GetCurrentAnimatorStateInfo(0).normalizedTime < 1.0f || m_TransitionDisplay.Anim.IsInTransition(0);
-                }
-            }
-            catch (Exception e)
-            {
-                Debug.Log("?????????? " + e.Message);
+                return m_CurrentDisplay.Anim.GetCurrentAnimatorStateInfo(0).normalizedTime < 1.0f || m_CurrentDisplay.Anim.IsInTransition(0);
             }
             return false;
         }
 
-        public void TransitionTo(string key)
+
+        public void TransitionFromCutToCut(string i_Key)
         {
-            if ((m_CurrentTarget == null && (m_CurrentDisplay == null || m_CurrentDisplay.Key != key)) || (m_CurrentTarget != null && m_CurrentTarget.Key != key))
+            TransitionTo(i_Key, ETransitionType.Cut, ETransitionType.Cut, DEFAULT_SPEED_MULTIPLIER, DEFAULT_SPEED_MULTIPLIER);
+        }
+
+        public void TransitionFromCutToFade(string i_Key)
+        {
+            TransitionTo(i_Key, ETransitionType.Cut, ETransitionType.Fade, DEFAULT_SPEED_MULTIPLIER, DEFAULT_SPEED_MULTIPLIER);
+        }
+        public void TransitionFromCutToFadeSlow(string i_Key)
+        {
+            TransitionTo(i_Key, ETransitionType.Cut, ETransitionType.Fade, DEFAULT_SPEED_MULTIPLIER, SLOW_SPEED_MULTIPLIER);
+        }
+        public void TransitionFromCutToFadeFast(string i_Key)
+        {
+            TransitionTo(i_Key, ETransitionType.Cut, ETransitionType.Fade, DEFAULT_SPEED_MULTIPLIER, FAST_SPEED_MULTIPLIER);
+        }
+
+        public void TransitionFromFadeToCut(string i_Key)
+        {
+            TransitionTo(i_Key, ETransitionType.Fade, ETransitionType.Cut, DEFAULT_SPEED_MULTIPLIER, DEFAULT_SPEED_MULTIPLIER);
+        }
+        public void TransitionFromFadeSlowToCut(string i_Key)
+        {
+            TransitionTo(i_Key, ETransitionType.Fade, ETransitionType.Cut, SLOW_SPEED_MULTIPLIER, DEFAULT_SPEED_MULTIPLIER);
+        }
+        public void TransitionFromFadeFastToCut(string i_Key)
+        {
+            TransitionTo(i_Key, ETransitionType.Fade, ETransitionType.Cut, FAST_SPEED_MULTIPLIER, DEFAULT_SPEED_MULTIPLIER);
+        }
+
+        public void TransitionFromFadeToFade(string i_Key)
+        {
+            TransitionTo(i_Key, ETransitionType.Fade, ETransitionType.Fade, DEFAULT_SPEED_MULTIPLIER, DEFAULT_SPEED_MULTIPLIER);
+        }
+        public void TransitionFromFadeSlowToFade(string i_Key)
+        {
+            TransitionTo(i_Key, ETransitionType.Fade, ETransitionType.Fade, SLOW_SPEED_MULTIPLIER, DEFAULT_SPEED_MULTIPLIER);
+        }
+        public void TransitionFromFadeFastToFade(string i_Key)
+        {
+            TransitionTo(i_Key, ETransitionType.Fade, ETransitionType.Fade, FAST_SPEED_MULTIPLIER, DEFAULT_SPEED_MULTIPLIER);
+        }
+        public void TransitionFromFadeToFadeSlow(string i_Key)
+        {
+            TransitionTo(i_Key, ETransitionType.Fade, ETransitionType.Fade, DEFAULT_SPEED_MULTIPLIER, SLOW_SPEED_MULTIPLIER);
+        }
+        public void TransitionFromFadeToFadeFast(string i_Key)
+        {
+            TransitionTo(i_Key, ETransitionType.Fade, ETransitionType.Fade, DEFAULT_SPEED_MULTIPLIER, FAST_SPEED_MULTIPLIER);
+        }
+        public void TransitionFromFadeSlowToFadeSlow(string i_Key)
+        {
+            TransitionTo(i_Key, ETransitionType.Fade, ETransitionType.Fade, SLOW_SPEED_MULTIPLIER, SLOW_SPEED_MULTIPLIER);
+        }
+        public void TransitionFromFadeSlowToFadeFast(string i_Key)
+        {
+            TransitionTo(i_Key, ETransitionType.Fade, ETransitionType.Fade, SLOW_SPEED_MULTIPLIER, FAST_SPEED_MULTIPLIER);
+        }
+        public void TransitionFromFadeFastToFadeSlow(string i_Key)
+        {
+            TransitionTo(i_Key, ETransitionType.Fade, ETransitionType.Fade, FAST_SPEED_MULTIPLIER, SLOW_SPEED_MULTIPLIER);
+        }
+        public void TransitionFromFadeFastToFadeFast(string i_Key)
+        {
+            TransitionTo(i_Key, ETransitionType.Fade, ETransitionType.Fade, FAST_SPEED_MULTIPLIER, FAST_SPEED_MULTIPLIER);
+        }
+
+        public void TransitionTo(string i_Key, ETransitionType i_TransitionOutType, ETransitionType i_TransitionInType, float i_TransitionOutSpeed, float i_TransitionInSpeed)
+        {
+            DisplayTransitionTarget newTarget = m_DisplayRecords.FirstOrDefault((x) => { return x.Key == i_Key; });
+            if (newTarget == null && !string.IsNullOrEmpty(i_Key))
             {
-                if (m_WaitCoroutine != null)
-                {
-                    Debug.Log("!!!!!!");
-                    StopCoroutine(m_WaitCoroutine);
-                    m_WaitCoroutine = null;
-                }
-                m_WaitCoroutine = StartCoroutine(TransitionToCoroutine(key));
+                //do nothing with unrecognised keys
+                return;
             }
 
-            ETransitionType newTransitionInType = ETransitionType.Fade;
-            ETransitionType newTransitionOutType = ETransitionType.Fade;
-            var newTarget = m_DisplayRecords.FirstOrDefault((x) => { return x.Key == key; });
-
-            bool replaceOutTransition = false;
-            bool replaceInTransition = false;
+            //cancel next pending transition;
+            m_NextTransition.Target = null;
+            bool forceNewTransition = false;
 
             switch (m_State)
             {
                 case EState.None:
-                    m_WaitCoroutine = StartCoroutine(TransitionToCoroutine(key));
+                    if (m_CurrentDisplay != newTarget)
+                    {
+                        forceNewTransition = true;
+                    }
                     break;
                 case EState.TransitionOut:
-
-                    if (newTransitionOutType == ETransitionType.Cut && m_TransitionOutType != ETransitionType.Cut)
+                    //if requested a faster out transition
+                    if (i_TransitionOutType == ETransitionType.Cut && m_Transition.TransitionOutType != ETransitionType.Cut)
                     {
-                        replaceOutTransition = true;
-                    }
-                    goto case EState.TransitionIn;
-                case EState.TransitionIn:
-
-                    if (newTarget == m_TransitionInTarget)
-                    {
-                        if (newTransitionOutType == ETransitionType.Cut && m_TransitionOutType != ETransitionType.Cut)
+                        var animInfo = m_CurrentTarget.Anim.GetCurrentAnimatorStateInfo(0);
+                        float speed = animInfo.speed * animInfo.speedMultiplier;
+                        if (speed != 0)
                         {
-                            replaceInTransition = true;
+                            float timeLeft = animInfo.length / speed;
+                            //don't swap to faster transition out type if almost finished
+                            if (timeLeft > 0.5f)
+                            {
+                                forceNewTransition = true;
+                            }
                         }
+                        else
+                        {
+                            //force transition change for invalid speed
+                            forceNewTransition = true;
+                        }
+                    }
+
+                    //if different target or requested a faster transition in type (same or different target)
+                    if ((m_Transition.Target != newTarget) || (i_TransitionInType == ETransitionType.Cut && m_Transition.TransitionInType != ETransitionType.Cut))
+                    {
+                        //!!! no need to cancel current transition !!!
+                        m_Transition.Target = newTarget;
+                        m_Transition.TransitionInType = i_TransitionInType;
+                        m_Transition.TransitionInSpeed = i_TransitionInSpeed;
+                    }
+                    break;
+                case EState.TransitionIn:
+                    //if the same target
+                    if(newTarget == m_Transition.Target)
+                    {
+                        //if requested a faster transition in type on the same target
+                        if (i_TransitionInType == ETransitionType.Cut && m_Transition.TransitionInType != ETransitionType.Cut)
+                        {
+                            var animInfo = m_Transition.Target.Anim.GetCurrentAnimatorStateInfo(0);
+                            float speed = animInfo.speed * animInfo.speedMultiplier;
+                            if (speed != 0)
+                            {
+                                float timeLeft = animInfo.length / speed;
+                                //don't swap to faster transition in type if almost finished
+                                if (timeLeft > 0.5f)
+                                {
+                                    forceNewTransition = true;
+                                }
+                            }
+                            else
+                            {
+                                //force transition change for invalid speed
+                                forceNewTransition = true;
+                            }
+                        }
+                    }
+                    //if allowed to transition out with a cut to a different target
+                    else if (i_TransitionOutType == ETransitionType.Cut)
+                    {
+                        forceNewTransition = true;
                     }
                     else
                     {
-                        replaceInTransition = true;
+                        //append for next transition
+                        m_NextTransition.Target = newTarget;
+                        m_NextTransition.TransitionOutType = i_TransitionOutType;
+                        m_NextTransition.TransitionInType = i_TransitionOutType;
                     }
-
                     break;
                 case EState.Ready:
-                    if (newTarget == m_CurrentTarget)
+                    if (m_CurrentDisplay != newTarget)
                     {
-                        return;
+                        forceNewTransition = true;
                     }
-                    m_WaitCoroutine = StartCoroutine(TransitionToCoroutine(key));
                     break;
             }
-        }
 
-        public void JumpTo(string key)
-        {
-            if ((m_CurrentTarget == null && (m_CurrentDisplay == null || m_CurrentDisplay.Key != key)) || (m_CurrentTarget != null && m_CurrentTarget.Key != key))
+            if(forceNewTransition)
             {
+                m_Transition.Target = newTarget;
+                m_Transition.TransitionOutType = i_TransitionOutType;
+                m_Transition.TransitionInType = i_TransitionInType;
+                m_Transition.TransitionOutSpeed = i_TransitionOutSpeed;
+                m_Transition.TransitionInSpeed = i_TransitionInSpeed;
+
                 if (m_WaitCoroutine != null)
                 {
-                    Debug.Log("!!!!!!");
                     StopCoroutine(m_WaitCoroutine);
-                    m_WaitCoroutine = null;
                 }
-                m_WaitCoroutine = StartCoroutine(TransitionToCoroutine(key, true));
+                m_WaitCoroutine = StartCoroutine(TransitionRunner());
             }
         }
     }

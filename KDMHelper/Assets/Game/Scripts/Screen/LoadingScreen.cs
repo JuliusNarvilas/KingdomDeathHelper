@@ -1,4 +1,5 @@
-﻿using Game.IO.InfoDB;
+﻿using Common.Display.Transition;
+using Game.IO.InfoDB;
 using Game.Model;
 using Game.Popup;
 using System.Collections;
@@ -44,16 +45,22 @@ namespace Game.Screen
             m_LoadingFinished++;
         }
 
-        private IEnumerator WaitToFinishLoading()
+        private IEnumerator MenuTransitionWaiter()
         {
-            Debug.Log("WaitingToFinish");
+            while (ApplicationManager.State != ApplicationManager.EState.Ready)
+            {
+                yield return null;
+            }
+            if (ApplicationManager.Instance.InfoDB == null || ApplicationManager.Instance.InfoDB.Sources == null)
+            {
+                yield break;
+            }
             while (m_LoadingFinished < ApplicationManager.Instance.InfoDB.Sources.Count)
             {
                 yield return null;
             }
 
-            Debug.Log("Finished");
-            m_DisplayController.TransitionTo("Main");
+            m_DisplayController.TransitionFromFadeToFade("Menu");
         }
 
 
@@ -63,13 +70,18 @@ namespace Game.Screen
             {
                 yield return null;
             }
+            m_DisplayController.TransitionFromFadeFastToFadeFast("Loading");
             Load();
+            TransitionToMenuWhenReady();
+        }
+
+        public void TransitionToMenuWhenReady()
+        {
+            StartCoroutine(MenuTransitionWaiter());
         }
         
         public void Load()
         {
-            m_DisplayController.JumpTo("Loading");
-
             if (ApplicationManager.State == ApplicationManager.EState.Ready)
             {
                 if (ApplicationManager.Instance.InfoDB != null && ApplicationManager.Instance.InfoDB.Sources != null)
@@ -80,7 +92,7 @@ namespace Game.Screen
                     int displayItemCount = m_DisplayElements.Count;
                     for (int i = 0; i < displayItemCount; ++i)
                     {
-                        Destroy(m_DisplayElements[i]);
+                        Destroy(m_DisplayElements[i].gameObject);
                     }
                     m_DisplayElements.Clear();
                     int count = infoDB.Sources.Count;
@@ -90,15 +102,9 @@ namespace Game.Screen
                         {
                             StartCoroutine(UpdateDisplayState(infoDB.Sources[i]));
                         }
-                        StartCoroutine(WaitToFinishLoading());
                     }
                 }
             }
-        }
-
-        public void LoadTest()
-        {
-            m_DisplayController.JumpTo("Loading");
         }
     }
 
