@@ -21,6 +21,7 @@ namespace Game.Model
 
     public class Campaign
     {
+        public Guid Id;
         public string Name;
         public EnumProperty<string> CampaignType;
         public List<EnumProperty<string>> Expansions;
