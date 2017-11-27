@@ -1,0 +1,15 @@
+https://www.imagemagick.org/script/command-line-processing.php
+Inline Image Resize
+
+
+
+It is sometimes convenient to resize an image as they are read. Suppose you have hundreds of large JPEG images you want to convert to a sequence of PNG thumbails:
+
+magick "*.png" -resize 120x120 thumbnail%03d.png
+
+
+
+Here all the images are read and subsequently resized. It is faster and less resource intensive to resize each image it is read:
+
+magick "*.png[120x120]" thumbnail%03d.png
+

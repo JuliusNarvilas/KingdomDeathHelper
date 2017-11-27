@@ -1,4 +1,5 @@
-﻿using Game.Properties;
+﻿using Common;
+using Game.Properties;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,10 +9,11 @@ namespace Game.Model.Character
 {
     public class SurvivorStats
     {
-        public StatProperty Speed;
         public StatProperty Accuracy;
         public StatProperty Streangth;
         public StatProperty Evasion;
+        public StatProperty Luck;
+        public StatProperty Speed;
 
         public StatProperty Find(string i_Name)
         {
@@ -25,7 +27,10 @@ namespace Game.Model.Character
                     return Streangth;
                 case "EVASION":
                     return Evasion;
+                case "LUCK":
+                    return Luck;
             }
+            Log.ProductionLogError(string.Format("Can not find Survivor stat: {0}.", i_Name));
             return null;
         }
     }

@@ -30,7 +30,7 @@ namespace Game
         private InfoDBController m_InfoDB;
         public InfoDBController InfoDB { get { return m_InfoDB; } }
 
-        protected void Awake()
+        protected new void Awake()
         {
             base.Awake();
             s_State = EState.Ready;

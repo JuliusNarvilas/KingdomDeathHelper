@@ -59,8 +59,7 @@ namespace Common.Display.Transition
         private string m_DefaultDisplayKey;
         [SerializeField]
         private List<DisplayTransitionTarget> m_DisplayRecords = new List<DisplayTransitionTarget>();
-
-        private DisplayTransitionTarget m_CurrentTarget;
+        
         private DisplayTransition m_Transition;
         private DisplayTransition m_NextTransition;
 
@@ -153,7 +152,7 @@ namespace Common.Display.Transition
 
         public bool IsInTransition()
         {
-            if (m_CurrentDisplay != null && m_CurrentDisplay.Anim != null)
+            if (m_CurrentDisplay != null && m_CurrentDisplay.Anim != null && m_CurrentDisplay.Anim.isActiveAndEnabled)
             {
                 return m_CurrentDisplay.Anim.GetCurrentAnimatorStateInfo(0).normalizedTime < 1.0f || m_CurrentDisplay.Anim.IsInTransition(0);
             }
@@ -254,7 +253,7 @@ namespace Common.Display.Transition
                     //if requested a faster out transition
                     if (i_TransitionOutType == ETransitionType.Cut && m_Transition.TransitionOutType != ETransitionType.Cut)
                     {
-                        var animInfo = m_CurrentTarget.Anim.GetCurrentAnimatorStateInfo(0);
+                        var animInfo = m_CurrentDisplay.Anim.GetCurrentAnimatorStateInfo(0);
                         float speed = animInfo.speed * animInfo.speedMultiplier;
                         if (speed != 0)
                         {

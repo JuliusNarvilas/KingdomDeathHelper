@@ -16,16 +16,25 @@ namespace Game.Model.Character
         Female
     }
 
+    public enum ELifeState
+    {
+        Unknown = 0,
+        Active = 1,
+        Retired = 2,
+        Dead = 4
+    }
+
     public class Survivor
     {
         public int Id;
 
         public Guid WritePermissionToken;
 
-
+        public string Name;
         public EGender Gender;
-        public bool Alive;
-        public bool Retired;
+        public ELifeState LifeState;
+
+        public bool SkipNextHunt;
 
         public int HuntXp;
         public int WeaponXp;
@@ -48,5 +57,7 @@ namespace Game.Model.Character
 
         public int Rage;
         public int Bleeding;
+
+        
     }
 }
