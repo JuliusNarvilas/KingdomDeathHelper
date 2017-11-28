@@ -1,4 +1,6 @@
-﻿using Game.Model.Character;
+﻿using Common;
+using Game.Display.Table;
+using Game.Model.Character;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,10 +8,13 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Game.Screen.SurvivorList
+namespace Game.Display.Screen
 {
-    public class SurvivorListScreen : MonoBehaviour
+    public class SurvivorTableScreen : MonoBehaviour
     {
+        private static SurvivorTableScreen s_Instance;
+        public static SurvivorTableScreen Instance { get { return s_Instance; } }
+
         [SerializeField]
         private Toggle m_ActiveCheckbox;
         [SerializeField]
@@ -21,7 +26,10 @@ namespace Game.Screen.SurvivorList
         private Toggle m_SkipHunt;
 
         [SerializeField]
-        private SurvivorSortControl m_SortControl;
+        private ContentSizeFitter m_ContentFitting;
+
+        [SerializeField]
+        private SurvivorTableSortControl m_SortControl;
 
         private List<Survivor> m_Survivors;
         private IOrderedEnumerable<Survivor> m_FilteredList;
@@ -50,9 +58,26 @@ namespace Game.Screen.SurvivorList
                 m_SortControl.OnChange = Sort;
             }
 
+            if(s_Instance == null)
+            {
+                s_Instance = this;
+            }
+            else
+            {
+                Log.ProductionLogError("SurvivorListScreen already exists.");
+            }
+
             //TODO: load survivors
         }
-        
+
+        private void OnDestroy()
+        {
+            if (s_Instance == this)
+            {
+                s_Instance = null;
+            }
+        }
+
         private void FilterChanged(bool isActive)
         {
             Rescan();
@@ -91,5 +116,19 @@ namespace Game.Screen.SurvivorList
             Sort();
         }
         
+
+        public void UpdateListElements()
+        {
+            var parentRect = m_ContentFitting.transform.parent.GetComponent<RectTransform>();
+            var fitterRect = m_ContentFitting.GetComponent<RectTransform>();
+            if(fitterRect.rect.width > parentRect.rect.width )
+            {
+                m_ContentFitting.horizontalFit = ContentSizeFitter.FitMode.MinSize;
+            }
+            else
+            {
+                m_ContentFitting.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+            }
+        }
     }
 }

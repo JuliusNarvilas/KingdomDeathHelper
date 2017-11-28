@@ -1,6 +1,7 @@
 ﻿using Common;
+using Common.Display.Table;
+using Game.Display.Screen;
 using Game.Model.Character;
-using Game.Screen.Sorting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,9 +9,9 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Game.Screen.SurvivorList
+namespace Game.Display.Table
 {
-    public class SurvivorSortControl : MonoBehaviour , IScreenSortControl<Survivor>
+    public class SurvivorTableSortControl : MonoBehaviour , ITableSortControl<Survivor>
     {
         private enum ESurvivorSortInfoType
         {
@@ -32,14 +33,15 @@ namespace Game.Screen.SurvivorList
         private struct SurvivorSortInfoSettings
         {
             public ESurvivorSortInfoType InfoType;
-            public ScreenSortInfo Info;
+            public TableSortInfo Info;
         }
 
         [SerializeField]
         private List<SurvivorSortInfoSettings> m_SortInfoList;
 
+
         private IOrderedEnumerable<Survivor> m_ProcessingList;
-        private List<ScreenSortInfo> m_ActiveSortInfoList = new List<ScreenSortInfo>();
+        private List<TableSortInfo> m_ActiveSortInfoList = new List<TableSortInfo>();
 
         public Action OnChange;
 
@@ -162,7 +164,7 @@ namespace Game.Screen.SurvivorList
         }
 
 
-        public void Clear()
+        public void ClearSortInfo()
         {
             int count = m_ActiveSortInfoList.Count;
             for (int i = 0; i < count; ++i)
@@ -170,29 +172,48 @@ namespace Game.Screen.SurvivorList
                 m_ActiveSortInfoList[i].SetStateSilent(ESortType.None);
             }
             m_ActiveSortInfoList.Clear();
-            TriggerOnChange();
+            TriggerOnSortChange();
         }
 
-        public void Append(ScreenSortInfo i_SortInfo)
+        public void AppendSortInfo(TableSortInfo i_SortInfo)
         {
             m_ActiveSortInfoList.Add(i_SortInfo);
-            TriggerOnChange();
+            TriggerOnSortChange();
         }
 
-        public void Remove(ScreenSortInfo i_SortInfo)
+        public void RemoveSortInfo(TableSortInfo i_SortInfo)
         {
             if(m_ActiveSortInfoList.Remove(i_SortInfo))
             {
-                TriggerOnChange();
+                TriggerOnSortChange();
             }
         }
 
-        public void TriggerOnChange()
+        public void TriggerOnSortChange()
         {
             if (OnChange != null)
             {
                 OnChange();
             }
+        }
+
+
+        private void UpdateListElements()
+        {
+            if (SurvivorTableScreen.Instance != null)
+            {
+                SurvivorTableScreen.Instance.UpdateListElements();
+            }
+        }
+
+        public void TriggerDisabledSortInfo(TableSortInfo i_SortInfo)
+        {
+            UpdateListElements();
+        }
+
+        public void TriggerEnabledSortInfo(TableSortInfo i_SortInfo)
+        {
+            UpdateListElements();
         }
     }
 }

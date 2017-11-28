@@ -21,6 +21,7 @@ namespace Game.IO.InfoDB
 #endif
 
         public List<InfoDBSource> Sources;
+        
 
         public void Reset()
         {

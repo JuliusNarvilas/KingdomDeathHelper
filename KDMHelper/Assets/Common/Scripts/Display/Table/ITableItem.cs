@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using UnityEngine;
 
-namespace Game.Screen
+namespace Common.Display.Table
 {
-    public class SettlementScreen : MonoBehaviour
+    public interface ITableItem
     {
-
     }
 }

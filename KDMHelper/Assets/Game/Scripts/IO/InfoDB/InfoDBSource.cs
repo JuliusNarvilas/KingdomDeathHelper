@@ -1,8 +1,10 @@
 ﻿using Common;
+using Common.Helpers;
 using Common.Threading;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using UnityEngine;
 
 namespace Game.IO.InfoDB
@@ -23,8 +25,9 @@ namespace Game.IO.InfoDB
         public string Name;
         [SerializeField]
         private TextAsset m_DefaultContentAsset;
-        private string m_FinalContent;
+        private string m_FinalReadContent;
         private string m_ExternalFilePath;
+        private StringBuilder m_WriteContent = new StringBuilder();
 
         [NonSerialized]
         private EState m_State = EState.Initial;
@@ -32,55 +35,66 @@ namespace Game.IO.InfoDB
         private string m_Error;
         public string Error { get { return m_Error; } }
 
+        private int m_VersionNumber;
+        private bool m_Dirty = false;
+
         private string[] m_ColumnNames;
         public string[] ColumnNames { get { return m_ColumnNames; } }
-        private InfoDBColumn[] m_Columns;
-        private IThreadPoolTaskHandle m_LoadTaskHandle;
+        private List<string[]> m_Values;
+        public int ValueCount { get { return m_Values.Count; } }
+        public string[] GetValue(int i_Index) { return ToSafeRecord(m_Values[i_Index]); }
+        public string GetValue(int i_Index, int i_ColumnIndex) { return m_Values[i_Index][i_ColumnIndex]; }
 
+        private object m_ReadWriteLock = new object();
+        private IThreadPoolTaskHandle m_LoadTaskHandle;
+        private IThreadPoolTaskHandle m_SaveTaskHandle;
+        public EThreadedTaskState LoadTaskState { get { return m_LoadTaskHandle == null ? EThreadedTaskState.Succeeded : m_LoadTaskHandle.State; } }
+        public EThreadedTaskState SaveTaskState { get { return m_SaveTaskHandle == null ? EThreadedTaskState.Succeeded : m_SaveTaskHandle.State; } }
 
         public void Reset()
         {
-            m_FinalContent = null;
+            m_Dirty = false;
+            m_FinalReadContent = null;
             m_ExternalFilePath = null;
             m_State = EState.Initial;
             m_ColumnNames = null;
-            m_Columns = null;
+            m_Values = null;
             m_LoadTaskHandle = null;
         }
 
-        public InfoDBColumn GetColumn(string name)
+        public void SetValues(int i_Index, string[] i_NewValues)
         {
-            for (int i = 0; i < m_Columns.Length; ++i)
-            {
-                var result = m_Columns[i];
-                if (name == result.Name)
-                {
-                    return result;
-                }
-            }
-            return null;
+            m_Dirty = true;
+            m_Values[i_Index] = ToSafeRecord(i_NewValues);
         }
 
-        public InfoDBRecord Find(string columnName, string valueMatch)
+        public void AddValues(string[] i_NewValues)
         {
-            var column = GetColumn(columnName);
-            if (column != null)
+            m_Dirty = true;
+            m_Values.Add(ToSafeRecord(i_NewValues));
+        }
+
+        private string[] ToSafeRecord(string[] i_NewValues)
+        {
+            string[] safeRecord = new string[m_ColumnNames.Length];
+            int minCount = Mathf.Min(i_NewValues.Length, m_ColumnNames.Length);
+            Array.Copy(i_NewValues, safeRecord, minCount);
+            
+            for (int i = minCount; i < m_ColumnNames.Length; ++i)
             {
-                int size = column.Content.Count;
-                for (int i = 0; i < size; ++i)
-                {
-                    if (column.Content[i] == valueMatch)
-                    {
-                        string[] values = new string[m_ColumnNames.Length];
-                        for (int j = 0; j < m_ColumnNames.Length; ++j)
-                        {
-                            values[j] = m_Columns[j].Content[i];
-                        }
-                        return new InfoDBRecord(m_ColumnNames, values);
-                    }
-                }
+                safeRecord[i] = string.Empty;
             }
-            return null;
+            return safeRecord;
+        }
+
+        public InfoDBColumn GetColumn(string i_Name)
+        {
+            return  new InfoDBColumn(this, i_Name);
+        }
+
+        public InfoDBRecord Find(string i_ColumnName, string i_ValueMatch)
+        {
+            return new InfoDBRecord(this, i_ColumnName, i_ValueMatch);
         }
 
         private bool TryGetVersionNumber(string fileContent, out int version)
@@ -102,19 +116,21 @@ namespace Game.IO.InfoDB
 
         public void LoadingFunc()
         {
-            int defaultVersionNumber = 0;
-            int externalVersionNumber = 0;
-            string externalAssetText = null;
-
-            if (!TryGetVersionNumber(m_FinalContent, out defaultVersionNumber))
+            lock (m_ReadWriteLock)
             {
-                m_Error = "Asset Data Invalid (Parse Error)!";
-                m_State = EState.Errored;
-                return;
-            }
+                int m_VersionNumber = 0;
+                int externalVersionNumber = 0;
+                string externalAssetText = null;
 
-            if (File.Exists(m_ExternalFilePath))
-            {
+                if (!TryGetVersionNumber(m_FinalReadContent, out m_VersionNumber))
+                {
+                    m_Error = "Asset Data Invalid (Parse Error)!";
+                    m_State = EState.Errored;
+                    return;
+                }
+
+                if (File.Exists(m_ExternalFilePath))
+                {
 #if !UNITY_EDITOR
                 externalAssetText = File.ReadAllText(m_ExternalFilePath);
                 if(!TryGetVersionNumber(externalAssetText, out externalVersionNumber))
@@ -124,14 +140,15 @@ namespace Game.IO.InfoDB
                     return;
                 }
 #endif
-            }
+                }
 
-            if (externalVersionNumber < 0 || externalVersionNumber >= defaultVersionNumber)
-            {
-                m_FinalContent = externalAssetText;
-            }
-            else
-            {
+                if (externalVersionNumber < 0 || externalVersionNumber >= m_VersionNumber)
+                {
+                    m_FinalReadContent = externalAssetText;
+                    m_VersionNumber = externalVersionNumber;
+                }
+                else
+                {
 #if !UNITY_EDITOR
                 int lastSeperator = m_ExternalFilePath.LastIndexOf('/');
                 var directory = m_ExternalFilePath.Substring(0, lastSeperator);
@@ -142,25 +159,70 @@ namespace Game.IO.InfoDB
                 }
                 File.WriteAllText(m_ExternalFilePath, m_FinalContent);
 #endif
+                }
+
+                m_State = EState.Parsing;
+                fgCSVReader.LoadFromString(m_FinalReadContent, new fgCSVReader.ReadLineDelegate(ReadLineFunc));
+
+                /*
+                bool goodParse = m_Columns != null && m_Columns.Length > 0 && m_Columns[0].Content.Count > 0;
+                if (!goodParse)
+                {
+                    m_Error = "Asset Data Invalid (Parse Error)!";
+                    m_State = EState.Errored;
+                    return;
+                }
+                */
+
+                Log.DebugLog("Finished loading {0}.", m_ExternalFilePath);
+
+                m_FinalReadContent = null;
+                m_Error = null;
+                m_State = EState.Ready;
             }
-
-            m_State = EState.Parsing;
-            fgCSVReader.LoadFromString(m_FinalContent, new fgCSVReader.ReadLineDelegate(ReadLineFunc));
-            bool goodParse = m_Columns != null && m_Columns.Length > 0 && m_Columns[0].Content.Count > 0;
-            if (!goodParse)
-            {
-                m_Error = "Asset Data Invalid (Parse Error)!";
-                m_State = EState.Errored;
-                return;
-            }
-
-            Log.DebugLog("Finished loading {0}.", m_ExternalFilePath);
-
-            m_FinalContent = null;
-            m_Error = null;
-            m_State = EState.Ready;
         }
 
+        private void SavingFunc()
+        {
+            lock(m_ReadWriteLock)
+            {
+                m_WriteContent.Length = 0;
+                m_WriteContent.Append(m_VersionNumber);
+                m_WriteContent.Append("\n");
+
+                int lastColumnIndex = m_ColumnNames.Length - 1;
+                for (int i = 0; i < lastColumnIndex; ++i)
+                {
+                    m_WriteContent.Append(StringHelper.StringToCSVCell(m_ColumnNames[i]));
+                    m_WriteContent.Append(", ");
+                }
+                m_WriteContent.Append(StringHelper.StringToCSVCell(m_ColumnNames[lastColumnIndex]));
+                m_WriteContent.Append('\n');
+
+                int valueCount = m_Values.Count;
+                for (int i = 0; i < valueCount; ++i)
+                {
+                    for (int j = 0; i < lastColumnIndex; ++j)
+                    {
+                        m_WriteContent.Append(StringHelper.StringToCSVCell(m_Values[i][j]));
+                        m_WriteContent.Append(", ");
+                    }
+                    m_WriteContent.Append(StringHelper.StringToCSVCell(m_Values[i][lastColumnIndex]));
+                    m_WriteContent.Append('\n');
+                }
+
+#if !UNITY_EDITOR
+                int lastSeperator = m_ExternalFilePath.LastIndexOf('/');
+                var directory = m_ExternalFilePath.Substring(0, lastSeperator);
+                DirectoryInfo target = new DirectoryInfo(directory);
+                if(!target.Exists)
+                {
+                    target.Create();
+                }
+                File.WriteAllText(m_ExternalFilePath, m_WriteContent.ToString());
+#endif
+            }
+        }
         
         public void Load()
         {
@@ -172,47 +234,49 @@ namespace Game.IO.InfoDB
                     m_Error = "Asset Not Found";
                     return;
                 }
-
+                
                 m_State = EState.Loading;
-                m_ExternalFilePath = string.Format("{0}/{1}.csv", Application.persistentDataPath, m_DefaultContentAsset.name);
-                m_FinalContent = m_DefaultContentAsset.text;
-                m_LoadTaskHandle = ThreadPool.Instance.AddTask(LoadingFunc);
+                if (m_ExternalFilePath == null)
+                {
+                    m_ExternalFilePath = string.Format("{0}/{1}.csv", Application.persistentDataPath, m_DefaultContentAsset.name);
+                }
+                m_FinalReadContent = m_DefaultContentAsset.text;
+                m_LoadTaskHandle = ThreadPool.Instance.AddTask(LoadingFunc, TimeSpan.FromMinutes(5), System.Threading.ThreadPriority.Highest);
             }
         }
 
-        private void ReadLineFunc(int line_index, List<string> line)
+        public void Save()
         {
-            if(line_index == 0)
+            if (m_ExternalFilePath == null)
             {
-                //skip version number
+                m_ExternalFilePath = string.Format("{0}/{1}.csv", Application.persistentDataPath, m_DefaultContentAsset.name);
             }
-            else if (line_index == 1)
+                
+            m_FinalReadContent = m_DefaultContentAsset.text;
+            m_SaveTaskHandle = ThreadPool.Instance.AddTask(SavingFunc, TimeSpan.FromMinutes(5), System.Threading.ThreadPriority.Highest);
+        }
+
+        public void SaveIfDirty()
+        {
+
+        }
+
+        private void ReadLineFunc(int i_LineIndex, List<string> i_Line)
+        {
+            if(i_LineIndex > 1)
             {
-                m_ColumnNames = line.ToArray();
-                m_Columns = new InfoDBColumn[m_ColumnNames.Length];
-                for (int i = 0; i < m_ColumnNames.Length; ++i)
+                for (int i = i_Line.Count; i < m_ColumnNames.Length; ++i)
                 {
-                    m_Columns[i] = new InfoDBColumn()
-                    {
-                        Name = m_ColumnNames[i],
-                        Content = new List<string>()
-                    };
+                    i_Line.Add(string.Empty);
                 }
+                m_Values.Add(i_Line.ToArray());
             }
-            else
+            else if (i_LineIndex > 1)
             {
-                for (int i = 0; i < m_ColumnNames.Length; ++i)
-                {
-                    if (i < line.Count)
-                    {
-                        m_Columns[i].Content.Add(line[i]);
-                    }
-                    else
-                    {
-                        m_Columns[i].Content.Add(string.Empty);
-                    }
-                }
+                m_ColumnNames = i_Line.ToArray();
+                m_Values = new List<string[]>();
             }
+            //skip line index 0 (version number)
         }
 
     }

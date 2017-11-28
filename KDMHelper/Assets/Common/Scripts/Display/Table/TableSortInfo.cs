@@ -6,13 +6,13 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Game.Screen.Sorting
+namespace Common.Display.Table
 {
 
-    public class ScreenSortInfo : MonoBehaviour
+    public class TableSortInfo : MonoBehaviour
     {
         [SerializeField]
-        private Text m_Text;
+        private UnityEngine.UI.Text m_Text;
 
         [SerializeField]
         private Image m_SortAscIndicator;
@@ -22,13 +22,29 @@ namespace Game.Screen.Sorting
         private ESortType m_State = ESortType.None;
         public ESortType State { get { return m_State; } }
 
-        private IScreenSortReceiver m_InfoReceiver;
+        private ITableSortReceiver m_InfoReceiver;
         private Action<bool> m_SortAction;
 
-        public void Init(IScreenSortReceiver i_InfoReceiver, Action<bool> i_SortAction)
+        public void Init(ITableSortReceiver i_InfoReceiver, Action<bool> i_SortAction)
         {
             m_InfoReceiver = i_InfoReceiver;
             m_SortAction = i_SortAction;
+        }
+
+        public void OnEnable()
+        {
+            if (m_InfoReceiver != null)
+            {
+                m_InfoReceiver.TriggerEnabledSortInfo(this);
+            }
+        }
+
+        public void OnDisable()
+        {
+            if (m_InfoReceiver != null)
+            {
+                m_InfoReceiver.TriggerDisabledSortInfo(this);
+            }
         }
 
         public void NextState()
@@ -55,18 +71,18 @@ namespace Game.Screen.Sorting
             if (m_State == ESortType.None)
             {
                 //TODO: Spawn new display indicator
-                m_InfoReceiver.Append(this);
+                m_InfoReceiver.AppendSortInfo(this);
             }
             else
             {
                 if (i_State == ESortType.None)
                 {
                     //TODO: delete display indicator
-                    m_InfoReceiver.Remove(this);
+                    m_InfoReceiver.RemoveSortInfo(this);
                 }
                 else
                 {
-                    m_InfoReceiver.TriggerOnChange();
+                    m_InfoReceiver.TriggerOnSortChange();
                 }
             }
             m_State = i_State;

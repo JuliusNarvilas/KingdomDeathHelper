@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
-namespace Game.Screen.Sorting
+namespace Game.Display.Screen
 {
-    public class ScreenSortInfoDisplay : MonoBehaviour
+    public class MenuScreen : MonoBehaviour
     {
+        
     }
 }
