@@ -258,7 +258,11 @@ namespace Game.IO.InfoDB
 
         public void SaveIfDirty()
         {
-
+            if(m_Dirty)
+            {
+                m_Dirty = false;
+                Save();
+            }
         }
 
         private void ReadLineFunc(int i_LineIndex, List<string> i_Line)

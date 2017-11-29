@@ -6,52 +6,88 @@ using Game.Properties;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
+using System.Xml.Serialization;
+using System.Xml;
+using System.Xml.Schema;
 
 namespace Game.Model
 {
 
-    public enum ESurvivalActions
-    {
-        Dodge = 1,
-        Encourage = 2,
-        Surge = 4,
-        Dash = 8
-    }
-
+    [Serializable]
     public class Campaign
     {
-        public Guid Id;
         public string Name;
-        public EnumProperty<string> CampaignType;
-        public List<EnumProperty<string>> Expansions;
-
-        public string SettlementName;
-
-        public MaxSurvivalProperty MaxSurvival;
-
-        public SettlementTimeline Timeline;
+        public List<SettlementTimelineRecord> Events;
         
 
-        List<Survivor> Population;
-        List<Survivor> Dead;
+        [OnDeserialized]
+        internal void OnDeserializedMethod(StreamingContext context)
+        {
 
-        public ESurvivalActions SurvivalActions;
-
-        List<int> MonsterVolumes;
+        }
 
 
-        public List<EnumProperty<WeaponProficiencyInfo>> WeaponMasteries;
-        public List<EnumProperty<string>> Innovations;
-        public List<EnumProperty<string>> Principals;
+        /*
+        public XmlSchema GetSchema()
+        {
+            return null;
+        }
+        public void ReadXml(XmlReader reader)
+        {
+            bool wasEmpty = reader.IsEmptyElement;
 
-        public List<EnumProperty<string>> Quarries;
-        //will probably change to add nemesis lvl tracking
-        public List<EnumProperty<string>> Nemesis;
+            reader.Read();
 
-        public SettlementResources Resources;
-        
+            if (wasEmpty)
+            {
+                return;
+            }
 
-        //Milestones???
+            while (reader.NodeType != XmlNodeType.EndElement)
+            {
+                reader.ReadStartElement(ItemTagName);
+
+                reader.ReadStartElement(KeyTagName);
+                TKey key = (TKey)keySerializer.Deserialize(reader);
+                reader.ReadEndElement();
+
+                reader.ReadStartElement(ValueTagName);
+                TValue value = (TValue)valueSerializer.Deserialize(reader);
+                reader.ReadEndElement();
+
+                this.Add(key, value);
+
+                reader.ReadEndElement();
+                reader.MoveToContent();
+            }
+
+            reader.ReadEndElement();
+        }
+
+
+        public void WriteXml(XmlWriter writer)
+        {
+            XmlSerializer keySerializer = new XmlSerializer(typeof(TKey));
+            XmlSerializer valueSerializer = new XmlSerializer(typeof(TValue));
+
+            writer.WriteElementString("CampaignType", CampaignType.GetValue());
+
+            writer.WriteStartElement(Expansions);
+            List<EnumProperty<string>> Expansions
+            foreach (TKey key in this.Keys)
+            {
+                
+
+                writer.WriteStartElement(ValueTagName);
+                TValue value = this[key];
+                valueSerializer.Serialize(writer, value);
+                writer.WriteEndElement();
+
+                writer.WriteEndElement();
+            }
+        }
+        */
     }
 }

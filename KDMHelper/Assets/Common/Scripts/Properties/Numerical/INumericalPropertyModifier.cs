@@ -34,7 +34,7 @@ namespace Common.Properties.Numerical
     /// <typeparam name="TNumerical">Type of the numerical data.</typeparam>
     public interface INumericalPropertyModifierReader<TNumerical>
     {
-        TNumerical Get();
+        TNumerical GetModifier();
     }
 
     /// <summary>

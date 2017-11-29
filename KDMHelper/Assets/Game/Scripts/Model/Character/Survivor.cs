@@ -26,8 +26,7 @@ namespace Game.Model.Character
 
     public class Survivor
     {
-        public int Id;
-
+        public Guid Id;
         public Guid WritePermissionToken;
 
         public string Name;

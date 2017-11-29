@@ -9,6 +9,5 @@ namespace Game.Model.Events
     {
         public int CurrentLanternYear;
         public List<SettlementTimelineRecord> Records;
-        
     }
 }

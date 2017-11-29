@@ -41,6 +41,19 @@ namespace Common.Properties.Enumeration
             /// </summary>
             public static Generator[] AllFactories { get { return s_Factories.ToArray(); } }
 
+            public static Generator FindFactory(string i_Name)
+            {
+                int count = s_Factories.Count;
+                for (int i = 0; i < count; ++i)
+                {
+                    if(s_Factories[i].Name == i_Name)
+                    {
+                        return s_Factories[i];
+                    }
+                }
+                return null;
+            }
+
             /// <summary>
             /// Factory name.
             /// </summary>

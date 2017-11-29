@@ -5,6 +5,7 @@ using System.Text;
 
 namespace Game.Model.Events
 {
+    [Serializable]
     public class SettlementTimelineRecord
     {
         public int LanternYear;

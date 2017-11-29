@@ -1,10 +1,13 @@
 ﻿
+using System;
+
 namespace Common.Properties
 {
     /// <summary>
     /// Simplest Property class for holding a value of any type.
     /// </summary>
     /// <typeparam name="T">Property value representation type.</typeparam>
+    [Serializable]
     public class Property<T>
     {
         /// <summary>

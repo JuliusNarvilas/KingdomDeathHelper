@@ -8,5 +8,6 @@ namespace Game.Properties
 {
     public class MaxSurvivalProperty : NumericalPropertyInt<int>
     {
+
     }
 }

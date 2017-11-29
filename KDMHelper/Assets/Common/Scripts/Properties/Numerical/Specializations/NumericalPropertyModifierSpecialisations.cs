@@ -11,7 +11,7 @@ namespace Common.Properties.Numerical.Specializations
             m_Value = i_Value;
         }
 
-        public T Get()
+        public T GetModifier()
         {
             return m_Value;
         }
