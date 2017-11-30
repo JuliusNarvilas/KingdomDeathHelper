@@ -65,7 +65,7 @@ namespace Common.Properties.Numerical
 
         protected void FireChangeEvent(ref NumericalPropertyChangeEventStruct<TNumerical, TContext, TModifierReader> i_EventData)
         {
-            Log.DebugLog("Numerical property change event fired.");
+            //Log.DebugLog("Numerical property change event fired.");
 
             if (ChangeSubscription != null)
             {

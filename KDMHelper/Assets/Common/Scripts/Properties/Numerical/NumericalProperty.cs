@@ -228,7 +228,7 @@ namespace Common.Properties.Numerical
             }
             m_FinalModifier = i_EventData.NewModifier;
 
-            Log.DebugLog("Numerical property final modifier updated from {0} to {1}.", i_EventData.OldModifier, i_EventData.NewModifier);
+            //Log.DebugLog("Numerical property final modifier updated from {0} to {1}.", i_EventData.OldModifier, i_EventData.NewModifier);
         }
 
         /// <summary>
@@ -241,7 +241,7 @@ namespace Common.Properties.Numerical
             m_Value = m_DataZero.Get();
             m_DataZero.ToZero();
 
-            Log.DebugLog("Numerical property value updated to {0}: {1} + {2}.", m_Value, m_BaseValue, m_FinalModifier);
+            //Log.DebugLog("Numerical property value updated to {0}: {1} + {2}.", m_Value, m_BaseValue, m_FinalModifier);
         }
 
         /// <summary>

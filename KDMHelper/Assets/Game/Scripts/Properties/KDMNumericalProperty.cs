@@ -99,16 +99,18 @@ namespace Game.Properties
 
     */
 
-    public class KDMNumericalProperty : NumericalProperty<int, int, INumericalPropertyModifierReader<int>>, IXmlSerializable
+    public class KDMNumericalProperty : NumericalProperty<int, int, KDMNumericalPropertyModifier>, IXmlSerializable
     {
         private static XmlSerializerNamespaces s_Namespaces;
         private static XmlSerializer s_CustomModSerializer;
+        private static XmlSerializer s_EnumModSerializer;
 
         static KDMNumericalProperty()
         {
             s_Namespaces = new XmlSerializerNamespaces();
             s_Namespaces.Add(string.Empty, string.Empty);
-            s_CustomModSerializer = new XmlSerializer(typeof(KDMCustomNumericalPropertyModifier));
+            s_CustomModSerializer = new XmlSerializer(typeof(CustomNumericalPropertyModifier));
+            s_EnumModSerializer = new XmlSerializer(typeof(EnumReferencedNumericalPropertyModifier));
         }
 
         public KDMNumericalProperty() : base(new NumericalPropertyIntData(0))
@@ -144,9 +146,14 @@ namespace Game.Properties
             {
                 while (reader.NodeType != XmlNodeType.EndElement)
                 {
-                    if(reader.Name == typeof(KDMCustomNumericalPropertyModifier).Name)
+                    if(reader.Name == typeof(CustomNumericalPropertyModifier).Name)
                     {
-                        var newMod = s_CustomModSerializer.Deserialize(reader) as KDMCustomNumericalPropertyModifier;
+                        var newMod = s_CustomModSerializer.Deserialize(reader) as CustomNumericalPropertyModifier;
+                        m_Modifiers.Add(newMod);
+                    }
+                    else if(reader.Name == typeof(EnumReferencedNumericalPropertyModifier).Name)
+                    {
+                        var newMod = s_EnumModSerializer.Deserialize(reader) as EnumReferencedNumericalPropertyModifier;
                         m_Modifiers.Add(newMod);
                     }
                     reader.MoveToContent();
@@ -165,7 +172,7 @@ namespace Game.Properties
             for(int i = 0; i < count; ++i)
             {
                 var mod = m_Modifiers[i];
-                if(mod is KDMCustomNumericalPropertyModifier)
+                if(mod is CustomNumericalPropertyModifier)
                 {
                     s_CustomModSerializer.Serialize(writer, mod, s_Namespaces);
                 }

@@ -101,7 +101,7 @@ namespace Common.Properties.Numerical
             m_Value = m_DataZero.Get();
             m_DataZero.ToZero();
 
-            Log.DebugLog("Numerical property value updated to {0}: {1} + {2} - {3}.", m_Value, m_BaseValue, m_FinalModifier, m_Depletion);
+            //Log.DebugLog("Numerical property value updated to {0}: {1} + {2} - {3}.", m_Value, m_BaseValue, m_FinalModifier, m_Depletion);
         }
 
         /// <summary>

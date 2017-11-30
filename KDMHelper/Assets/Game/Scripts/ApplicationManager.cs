@@ -1,6 +1,7 @@
 ﻿using Common;
 using Game.IO.InfoDB;
 using Game.Properties;
+using Game.Properties.Modifiers;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
@@ -48,9 +49,9 @@ namespace Game
             XmlSerializer s_Serializer = new XmlSerializer(typeof(KDMNumericalProperty));
 
             KDMNumericalProperty test = new KDMNumericalProperty(2);
-            test.AddModifier(new KDMCustomNumericalPropertyModifier(3, "testType"));
-            test.AddModifier(new KDMCustomNumericalPropertyModifier(-1, "testType"));
-            test.AddModifier(new KDMCustomNumericalPropertyModifier(2, "testType"));
+            test.AddModifier(new CustomNumericalPropertyModifier(3));
+            test.AddModifier(new CustomNumericalPropertyModifier(-1));
+            test.AddModifier(new CustomNumericalPropertyModifier(2));
 
             List<KDMNumericalProperty> testList = new List<KDMNumericalProperty>();
             testList.Add(test);

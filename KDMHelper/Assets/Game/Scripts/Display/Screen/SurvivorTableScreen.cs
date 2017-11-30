@@ -53,11 +53,6 @@ namespace Game.Display.Screen
                 m_SkipHunt.onValueChanged.AddListener(FilterChanged);
             }
 
-            if (m_SortControl != null)
-            {
-                m_SortControl.OnChange = Sort;
-            }
-
             if(s_Instance == null)
             {
                 s_Instance = this;
@@ -80,16 +75,11 @@ namespace Game.Display.Screen
 
         private void FilterChanged(bool isActive)
         {
-            Rescan();
-        }
-
-        private void Sort()
-        {
-            m_SortControl.Sort(m_FilteredList);
+            RegenerateSurvivorTable();
         }
 
 
-        public void Rescan()
+        public void RegenerateSurvivorTable()
         {
             ELifeState lifeStateFlags = ELifeState.Unknown;
             if (m_ActiveCheckbox == null || m_ActiveCheckbox.isOn)
@@ -113,11 +103,11 @@ namespace Game.Display.Screen
                     x.SkipNextHunt == skipHunt;
             }).OrderBy(x => 1);
 
-            Sort();
+            m_SortControl.Sort(m_FilteredList);
         }
         
 
-        public void UpdateListElements()
+        public void UpdateListElementsDisplay()
         {
             var parentRect = m_ContentFitting.transform.parent.GetComponent<RectTransform>();
             var fitterRect = m_ContentFitting.GetComponent<RectTransform>();
@@ -129,6 +119,9 @@ namespace Game.Display.Screen
             {
                 m_ContentFitting.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
             }
+
+            //TODO hide elements if needed
+            //TODO iterate through survivors and update their element visability
         }
     }
 }

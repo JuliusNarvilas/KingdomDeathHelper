@@ -28,12 +28,12 @@ SpriteAtlas:
       enableTightPacking: 0
     packedHash:
       serializedVersion: 2
-      Hash: 26f41064dcb62a2fca7a4aecd4a32641
+      Hash: 9bd70c50c61b0bbec0ef369ce5494331
     variantMultiplier: 1
     bindAsDefault: 1
     finalFormat: 47
-    hashString: 26f41064dcb62a2fca7a4aecd4a32641
-    totalSpriteSurfaceArea: 1531792
+    hashString: 9bd70c50c61b0bbec0ef369ce5494331
+    totalSpriteSurfaceArea: 1597328
     packables:
     - {fileID: 2800000, guid: 51c9e2fd5e474dd478f2f72f622f656f, type: 3}
     - {fileID: 102900000, guid: d9628fc7f6fcb8b46a85676c598d2eda, type: 3}
@@ -60,6 +60,7 @@ SpriteAtlas:
     - 84fa3bb9a06f2fa44bd2e529075a78d4: 21300000
     - f4204b8753b62ef4e9dacb2eee6a145e: 21300000
     - cee3338393dc8dd4b97b23ae6ad4910b: 21300000
+    - 0c04d14b6ec8ba242b01ea2937be4fa1: 21300000
     - b80b4f8cafe382b44ab66a036caaa11e: 21300000
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
@@ -85,6 +86,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 84fa3bb9a06f2fa44bd2e529075a78d4, type: 3}
   - {fileID: 21300000, guid: f4204b8753b62ef4e9dacb2eee6a145e, type: 3}
   - {fileID: 21300000, guid: cee3338393dc8dd4b97b23ae6ad4910b, type: 3}
+  - {fileID: 21300000, guid: 0c04d14b6ec8ba242b01ea2937be4fa1, type: 3}
   - {fileID: 21300000, guid: b80b4f8cafe382b44ab66a036caaa11e, type: 3}
   m_PackedSpriteNamesToIndex:
   - Logo
@@ -109,6 +111,7 @@ SpriteAtlas:
   - SwordWhite 256
   - AccuracyWhite 256
   - LegsWhite 256
+  - PlusWhite 256
   - HandWhite 256
   m_Tag: WhiteIcons
   m_IsVariant: 0

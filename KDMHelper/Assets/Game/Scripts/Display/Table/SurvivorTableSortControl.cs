@@ -11,23 +11,24 @@ using UnityEngine.UI;
 
 namespace Game.Display.Table
 {
-    public class SurvivorTableSortControl : MonoBehaviour , ITableSortControl<Survivor>
+    public enum ESurvivorSortInfoType
     {
-        private enum ESurvivorSortInfoType
-        {
-            Name,
-            Strength,
-            Evasion,
-            Luck,
-            Accuracy,
-            Speed,
-            HuntXp,
-            Gender,
-            WeaponType,
-            WeaponXp,
-            Courage,
-            Understanding
-        }
+        Name,
+        Strength,
+        Evasion,
+        Luck,
+        Accuracy,
+        Speed,
+        HuntXp,
+        Gender,
+        WeaponType,
+        WeaponXp,
+        Courage,
+        Understanding
+    }
+
+    public class SurvivorTableSortControl : MonoBehaviour, ITableSortControl<Survivor>
+    {
 
         [Serializable]
         private struct SurvivorSortInfoSettings
@@ -36,21 +37,48 @@ namespace Game.Display.Table
             public TableSortInfo Info;
         }
 
+
+        private static int s_InfoTypeCount;
+        public static int InfoTypeCount { get { return s_InfoTypeCount; } }
+        static SurvivorTableSortControl()
+        {
+            s_InfoTypeCount = Enum.GetNames(typeof(ESurvivorSortInfoType)).Length;
+        }
+
+
         [SerializeField]
         private List<SurvivorSortInfoSettings> m_SortInfoList;
-
+        
 
         private IOrderedEnumerable<Survivor> m_ProcessingList;
-        private List<TableSortInfo> m_ActiveSortInfoList = new List<TableSortInfo>();
 
-        public Action OnChange;
+        private List<TableSortInfo> m_ActiveSortInfoList = new List<TableSortInfo>();
+        private List<TableSortInfo> m_VisibleSortInfoList = new List<TableSortInfo>();
+        private TableSortInfo[] SortInfoArray;
 
         private void Awake()
         {
-            int count = m_SortInfoList.Count;
-            for(int i = 0; i < count; ++i)
+            SortInfoArray = new TableSortInfo[InfoTypeCount];
+            int givenInfoCount = m_SortInfoList.Count;
+            for (int i = 0; i < givenInfoCount; ++i)
             {
-                InitInfo(m_SortInfoList[i]);
+                var sortInfoSettings = m_SortInfoList[i];
+
+                int index = (int)sortInfoSettings.InfoType;
+                if (index >= 0 && index < InfoTypeCount)
+                {
+                    SortInfoArray[i] = sortInfoSettings.Info;
+                }
+                else
+                {
+                    Log.ProductionLogError("Invalid Survivor Sort Info type.");
+                }
+
+                InitInfo(sortInfoSettings);
+                if(sortInfoSettings.Info.gameObject.activeSelf)
+                {
+                    m_VisibleSortInfoList.Add(sortInfoSettings.Info);
+                }
             }
         }
 
@@ -177,8 +205,11 @@ namespace Game.Display.Table
 
         public void AppendSortInfo(TableSortInfo i_SortInfo)
         {
-            m_ActiveSortInfoList.Add(i_SortInfo);
-            TriggerOnSortChange();
+            if (!m_ActiveSortInfoList.Contains(i_SortInfo))
+            {
+                m_ActiveSortInfoList.Add(i_SortInfo);
+                TriggerOnSortChange();
+            }
         }
 
         public void RemoveSortInfo(TableSortInfo i_SortInfo)
@@ -191,9 +222,9 @@ namespace Game.Display.Table
 
         public void TriggerOnSortChange()
         {
-            if (OnChange != null)
+            if (SurvivorTableScreen.Instance != null)
             {
-                OnChange();
+                SurvivorTableScreen.Instance.RegenerateSurvivorTable();
             }
         }
 
@@ -202,18 +233,30 @@ namespace Game.Display.Table
         {
             if (SurvivorTableScreen.Instance != null)
             {
-                SurvivorTableScreen.Instance.UpdateListElements();
+                SurvivorTableScreen.Instance.UpdateListElementsDisplay();
             }
         }
 
         public void TriggerDisabledSortInfo(TableSortInfo i_SortInfo)
         {
-            UpdateListElements();
+            m_VisibleSortInfoList.Remove(i_SortInfo);
+            RemoveSortInfo(i_SortInfo);
+            if (SurvivorTableScreen.Instance != null)
+            {
+                SurvivorTableScreen.Instance.UpdateListElementsDisplay();
+            }
         }
 
         public void TriggerEnabledSortInfo(TableSortInfo i_SortInfo)
         {
-            UpdateListElements();
+            if(!m_VisibleSortInfoList.Contains(i_SortInfo))
+            {
+                m_VisibleSortInfoList.Add(i_SortInfo);
+            }
+            if (SurvivorTableScreen.Instance != null)
+            {
+                SurvivorTableScreen.Instance.UpdateListElementsDisplay();
+            }
         }
     }
 }
