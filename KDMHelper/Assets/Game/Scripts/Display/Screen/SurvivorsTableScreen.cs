@@ -10,10 +10,10 @@ using UnityEngine.UI;
 
 namespace Game.Display.Screen
 {
-    public class SurvivorTableScreen : MonoBehaviour
+    public class SurvivorsTableScreen : MonoBehaviour
     {
-        private static SurvivorTableScreen s_Instance;
-        public static SurvivorTableScreen Instance { get { return s_Instance; } }
+        private static SurvivorsTableScreen s_Instance;
+        public static SurvivorsTableScreen Instance { get { return s_Instance; } }
 
         [SerializeField]
         private Toggle m_ActiveCheckbox;
@@ -29,7 +29,7 @@ namespace Game.Display.Screen
         private ContentSizeFitter m_ContentFitting;
 
         [SerializeField]
-        private SurvivorTableSortControl m_SortControl;
+        private SurvivorsTableSortControl m_SortControl;
 
         private List<Survivor> m_Survivors;
         private IOrderedEnumerable<Survivor> m_FilteredList;
@@ -109,6 +109,8 @@ namespace Game.Display.Screen
 
         public void UpdateListElementsDisplay()
         {
+            //force scroll bar to appear when the available width is too small (ContentSizeFitter.FitMode.MinSize)
+            //or force expand table item elements when the available width is too large (ContentSizeFitter.FitMode.Unconstrained)
             var parentRect = m_ContentFitting.transform.parent.GetComponent<RectTransform>();
             var fitterRect = m_ContentFitting.GetComponent<RectTransform>();
             if(fitterRect.rect.width > parentRect.rect.width )

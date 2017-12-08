@@ -157,7 +157,7 @@ namespace Game.IO.InfoDB
                 {
                     target.Create();
                 }
-                File.WriteAllText(m_ExternalFilePath, m_FinalContent);
+                File.WriteAllText(m_ExternalFilePath, m_FinalReadContent);
 #endif
                 }
 

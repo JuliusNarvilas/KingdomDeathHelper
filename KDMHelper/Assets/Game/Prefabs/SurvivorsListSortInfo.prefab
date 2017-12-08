@@ -589,7 +589,7 @@ GameObject:
   - component: {fileID: 114683043314277022}
   - component: {fileID: 114422027347693020}
   m_Layer: 5
-  m_Name: SurvivorListSortInfo
+  m_Name: SurvivorsListSortInfo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -331,7 +331,7 @@ GameObject:
   - component: {fileID: 114974136908267986}
   - component: {fileID: 114432660953445590}
   m_Layer: 5
-  m_Name: SurvivorListItem
+  m_Name: SurvivorsListItem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

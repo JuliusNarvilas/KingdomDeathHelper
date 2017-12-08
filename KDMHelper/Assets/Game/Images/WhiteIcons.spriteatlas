@@ -21,22 +21,25 @@ SpriteAtlas:
     platformSettings: []
     packingParameters:
       serializedVersion: 2
-      padding: 2
+      padding: 4
       blockOffset: 1
       allowAlphaSplitting: 0
       enableRotation: 0
       enableTightPacking: 0
     packedHash:
       serializedVersion: 2
-      Hash: 9bd70c50c61b0bbec0ef369ce5494331
+      Hash: 7c009041a3ec71286917f1e3b933ee82
     variantMultiplier: 1
     bindAsDefault: 1
     finalFormat: 47
-    hashString: 9bd70c50c61b0bbec0ef369ce5494331
-    totalSpriteSurfaceArea: 1597328
+    hashString: 7c009041a3ec71286917f1e3b933ee82
+    totalSpriteSurfaceArea: 1665936
     packables:
     - {fileID: 2800000, guid: 51c9e2fd5e474dd478f2f72f622f656f, type: 3}
     - {fileID: 102900000, guid: d9628fc7f6fcb8b46a85676c598d2eda, type: 3}
+    - {fileID: 10917, guid: 0000000000000000f000000000000000, type: 0}
+    - {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+    - {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
     packedSpriteRenderDataKeys:
     - 51c9e2fd5e474dd478f2f72f622f656f: 21300000
     - a821ba391bfd5cb47b8ece3f598e9bea: 21300000
@@ -60,8 +63,12 @@ SpriteAtlas:
     - 84fa3bb9a06f2fa44bd2e529075a78d4: 21300000
     - f4204b8753b62ef4e9dacb2eee6a145e: 21300000
     - cee3338393dc8dd4b97b23ae6ad4910b: 21300000
+    - 19ea02ba0b2450140a68f5250858d08a: 21300000
     - 0c04d14b6ec8ba242b01ea2937be4fa1: 21300000
     - b80b4f8cafe382b44ab66a036caaa11e: 21300000
+    - 0000000000000000f000000000000000: 10907
+    - 0000000000000000f000000000000000: 10917
+    - 0000000000000000f000000000000000: 10905
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
   - {fileID: 21300000, guid: 51c9e2fd5e474dd478f2f72f622f656f, type: 3}
@@ -86,8 +93,12 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 84fa3bb9a06f2fa44bd2e529075a78d4, type: 3}
   - {fileID: 21300000, guid: f4204b8753b62ef4e9dacb2eee6a145e, type: 3}
   - {fileID: 21300000, guid: cee3338393dc8dd4b97b23ae6ad4910b, type: 3}
+  - {fileID: 21300000, guid: 19ea02ba0b2450140a68f5250858d08a, type: 3}
   - {fileID: 21300000, guid: 0c04d14b6ec8ba242b01ea2937be4fa1, type: 3}
   - {fileID: 21300000, guid: b80b4f8cafe382b44ab66a036caaa11e, type: 3}
+  - {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 10917, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
   m_PackedSpriteNamesToIndex:
   - Logo
   - TimelineWhite 256
@@ -111,7 +122,11 @@ SpriteAtlas:
   - SwordWhite 256
   - AccuracyWhite 256
   - LegsWhite 256
+  - CampfireWhite 256
   - PlusWhite 256
   - HandWhite 256
+  - Background
+  - UIMask
+  - UISprite
   m_Tag: WhiteIcons
   m_IsVariant: 0

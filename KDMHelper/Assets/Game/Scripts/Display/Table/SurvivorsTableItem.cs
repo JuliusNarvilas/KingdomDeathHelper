@@ -10,30 +10,30 @@ using UnityEngine.UI;
 namespace Game.Display.Table
 {
 
-    public class SurvivorTableItem : MonoBehaviour
+    public class SurvivorsTableItem : MonoBehaviour
     {
         [Serializable]
-        private struct SurvivorTableItemElementConfig
+        private struct SurvivorsTableItemElementConfig
         {
-            public ESurvivorSortInfoType InfoType;
+            public ESurvivorsSortInfoType InfoType;
             public TableItemElement Element;
         }
 
         
         [SerializeField]
-        private List<SurvivorTableItemElementConfig> m_ItemElements;
+        private List<SurvivorsTableItemElementConfig> m_ItemElements;
 
         private TableItemElement[] m_ElementArray;
 
         private void Awake()
         {
-            m_ElementArray = new TableItemElement[SurvivorTableSortControl.InfoTypeCount];
+            m_ElementArray = new TableItemElement[SurvivorsTableSortControl.InfoTypeCount];
             int givenElementCount = m_ItemElements.Count;
             for (int i = 0; i < givenElementCount; ++i)
             {
                 var element = m_ItemElements[i];
                 int index = (int)element.InfoType;
-                if(index >= 0 && index < SurvivorTableSortControl.InfoTypeCount)
+                if(index >= 0 && index < SurvivorsTableSortControl.InfoTypeCount)
                 {
                     m_ElementArray[i] = element.Element;
                 }

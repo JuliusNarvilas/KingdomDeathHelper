@@ -11,7 +11,7 @@ using UnityEngine.UI;
 
 namespace Game.Display.Table
 {
-    public enum ESurvivorSortInfoType
+    public enum ESurvivorsSortInfoType
     {
         Name,
         Strength,
@@ -27,27 +27,27 @@ namespace Game.Display.Table
         Understanding
     }
 
-    public class SurvivorTableSortControl : MonoBehaviour, ITableSortControl<Survivor>
+    public class SurvivorsTableSortControl : MonoBehaviour, ITableSortControl<Survivor>
     {
 
         [Serializable]
-        private struct SurvivorSortInfoSettings
+        private struct SurvivorsSortInfoSettings
         {
-            public ESurvivorSortInfoType InfoType;
+            public ESurvivorsSortInfoType InfoType;
             public TableSortInfo Info;
         }
 
 
         private static int s_InfoTypeCount;
         public static int InfoTypeCount { get { return s_InfoTypeCount; } }
-        static SurvivorTableSortControl()
+        static SurvivorsTableSortControl()
         {
-            s_InfoTypeCount = Enum.GetNames(typeof(ESurvivorSortInfoType)).Length;
+            s_InfoTypeCount = Enum.GetNames(typeof(ESurvivorsSortInfoType)).Length;
         }
 
 
         [SerializeField]
-        private List<SurvivorSortInfoSettings> m_SortInfoList;
+        private List<SurvivorsSortInfoSettings> m_SortInfoList;
         
 
         private IOrderedEnumerable<Survivor> m_ProcessingList;
@@ -82,44 +82,44 @@ namespace Game.Display.Table
             }
         }
 
-        private void InitInfo(SurvivorSortInfoSettings i_Settings)
+        private void InitInfo(SurvivorsSortInfoSettings i_Settings)
         {
             switch(i_Settings.InfoType)
             {
-                case ESurvivorSortInfoType.Name:
+                case ESurvivorsSortInfoType.Name:
                     i_Settings.Info.Init(this, SortName);
                     break;
-                case ESurvivorSortInfoType.Strength:
+                case ESurvivorsSortInfoType.Strength:
                     i_Settings.Info.Init(this, SortStrength);
                     break;
-                case ESurvivorSortInfoType.Evasion:
+                case ESurvivorsSortInfoType.Evasion:
                     i_Settings.Info.Init(this, SortEvasion);
                     break;
-                case ESurvivorSortInfoType.Luck:
+                case ESurvivorsSortInfoType.Luck:
                     i_Settings.Info.Init(this, SortLuck);
                     break;
-                case ESurvivorSortInfoType.Accuracy:
+                case ESurvivorsSortInfoType.Accuracy:
                     i_Settings.Info.Init(this, SortAccuracy);
                     break;
-                case ESurvivorSortInfoType.Speed:
+                case ESurvivorsSortInfoType.Speed:
                     i_Settings.Info.Init(this, SortSpeed);
                     break;
-                case ESurvivorSortInfoType.HuntXp:
+                case ESurvivorsSortInfoType.HuntXp:
                     i_Settings.Info.Init(this, SortHuntXp);
                     break;
-                case ESurvivorSortInfoType.Gender:
+                case ESurvivorsSortInfoType.Gender:
                     i_Settings.Info.Init(this, SortGender);
                     break;
-                case ESurvivorSortInfoType.WeaponType:
+                case ESurvivorsSortInfoType.WeaponType:
                     i_Settings.Info.Init(this, SortWeaponType);
                     break;
-                case ESurvivorSortInfoType.WeaponXp:
+                case ESurvivorsSortInfoType.WeaponXp:
                     i_Settings.Info.Init(this, SortWeaponXp);
                     break;
-                case ESurvivorSortInfoType.Courage:
+                case ESurvivorsSortInfoType.Courage:
                     i_Settings.Info.Init(this, SortCourage);
                     break;
-                case ESurvivorSortInfoType.Understanding:
+                case ESurvivorsSortInfoType.Understanding:
                     i_Settings.Info.Init(this, SortUnderstanding);
                     break;
                 default:
@@ -222,18 +222,18 @@ namespace Game.Display.Table
 
         public void TriggerOnSortChange()
         {
-            if (SurvivorTableScreen.Instance != null)
+            if (SurvivorsTableScreen.Instance != null)
             {
-                SurvivorTableScreen.Instance.RegenerateSurvivorTable();
+                SurvivorsTableScreen.Instance.RegenerateSurvivorTable();
             }
         }
 
 
         private void UpdateListElements()
         {
-            if (SurvivorTableScreen.Instance != null)
+            if (SurvivorsTableScreen.Instance != null)
             {
-                SurvivorTableScreen.Instance.UpdateListElementsDisplay();
+                SurvivorsTableScreen.Instance.UpdateListElementsDisplay();
             }
         }
 
@@ -241,9 +241,9 @@ namespace Game.Display.Table
         {
             m_VisibleSortInfoList.Remove(i_SortInfo);
             RemoveSortInfo(i_SortInfo);
-            if (SurvivorTableScreen.Instance != null)
+            if (SurvivorsTableScreen.Instance != null)
             {
-                SurvivorTableScreen.Instance.UpdateListElementsDisplay();
+                SurvivorsTableScreen.Instance.UpdateListElementsDisplay();
             }
         }
 
@@ -253,9 +253,9 @@ namespace Game.Display.Table
             {
                 m_VisibleSortInfoList.Add(i_SortInfo);
             }
-            if (SurvivorTableScreen.Instance != null)
+            if (SurvivorsTableScreen.Instance != null)
             {
-                SurvivorTableScreen.Instance.UpdateListElementsDisplay();
+                SurvivorsTableScreen.Instance.UpdateListElementsDisplay();
             }
         }
     }
