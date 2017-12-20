@@ -3,6 +3,7 @@ using Common.Display.Table;
 using Game.Display.Screen;
 using Game.Model.Character;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -54,11 +55,17 @@ namespace Game.Display.Table
 
         private List<TableSortInfo> m_ActiveSortInfoList = new List<TableSortInfo>();
         private List<TableSortInfo> m_VisibleSortInfoList = new List<TableSortInfo>();
-        private TableSortInfo[] SortInfoArray;
+        public List<TableSortInfo> GetVisibleSortInfo()
+        {
+            return m_VisibleSortInfoList.ToList();
+        }
+
+        private TableSortInfo[] m_SortInfoByType;
+        private Coroutine m_DeferedListElementsUpdate;
 
         private void Awake()
         {
-            SortInfoArray = new TableSortInfo[InfoTypeCount];
+            m_SortInfoByType = new TableSortInfo[InfoTypeCount];
             int givenInfoCount = m_SortInfoList.Count;
             for (int i = 0; i < givenInfoCount; ++i)
             {
@@ -67,7 +74,7 @@ namespace Game.Display.Table
                 int index = (int)sortInfoSettings.InfoType;
                 if (index >= 0 && index < InfoTypeCount)
                 {
-                    SortInfoArray[i] = sortInfoSettings.Info;
+                    m_SortInfoByType[i] = sortInfoSettings.Info;
                 }
                 else
                 {
@@ -80,6 +87,8 @@ namespace Game.Display.Table
                     m_VisibleSortInfoList.Add(sortInfoSettings.Info);
                 }
             }
+
+            m_VisibleSortInfoList.Sort(TableSortInfo.SiblingIndexComparer.Ascending);
         }
 
         private void InitInfo(SurvivorsSortInfoSettings i_Settings)
@@ -87,40 +96,40 @@ namespace Game.Display.Table
             switch(i_Settings.InfoType)
             {
                 case ESurvivorsSortInfoType.Name:
-                    i_Settings.Info.Init(this, SortName);
+                    i_Settings.Info.Init(this, SortName, i_Settings.InfoType);
                     break;
                 case ESurvivorsSortInfoType.Strength:
-                    i_Settings.Info.Init(this, SortStrength);
+                    i_Settings.Info.Init(this, SortStrength, i_Settings.InfoType);
                     break;
                 case ESurvivorsSortInfoType.Evasion:
-                    i_Settings.Info.Init(this, SortEvasion);
+                    i_Settings.Info.Init(this, SortEvasion, i_Settings.InfoType);
                     break;
                 case ESurvivorsSortInfoType.Luck:
-                    i_Settings.Info.Init(this, SortLuck);
+                    i_Settings.Info.Init(this, SortLuck, i_Settings.InfoType);
                     break;
                 case ESurvivorsSortInfoType.Accuracy:
-                    i_Settings.Info.Init(this, SortAccuracy);
+                    i_Settings.Info.Init(this, SortAccuracy, i_Settings.InfoType);
                     break;
                 case ESurvivorsSortInfoType.Speed:
-                    i_Settings.Info.Init(this, SortSpeed);
+                    i_Settings.Info.Init(this, SortSpeed, i_Settings.InfoType);
                     break;
                 case ESurvivorsSortInfoType.HuntXp:
-                    i_Settings.Info.Init(this, SortHuntXp);
+                    i_Settings.Info.Init(this, SortHuntXp, i_Settings.InfoType);
                     break;
                 case ESurvivorsSortInfoType.Gender:
-                    i_Settings.Info.Init(this, SortGender);
+                    i_Settings.Info.Init(this, SortGender, i_Settings.InfoType);
                     break;
                 case ESurvivorsSortInfoType.WeaponType:
-                    i_Settings.Info.Init(this, SortWeaponType);
+                    i_Settings.Info.Init(this, SortWeaponType, i_Settings.InfoType);
                     break;
                 case ESurvivorsSortInfoType.WeaponXp:
-                    i_Settings.Info.Init(this, SortWeaponXp);
+                    i_Settings.Info.Init(this, SortWeaponXp, i_Settings.InfoType);
                     break;
                 case ESurvivorsSortInfoType.Courage:
-                    i_Settings.Info.Init(this, SortCourage);
+                    i_Settings.Info.Init(this, SortCourage, i_Settings.InfoType);
                     break;
                 case ESurvivorsSortInfoType.Understanding:
-                    i_Settings.Info.Init(this, SortUnderstanding);
+                    i_Settings.Info.Init(this, SortUnderstanding, i_Settings.InfoType);
                     break;
                 default:
                     Log.ProductionLogError(string.Format("Unknown ESurvivorSortInfoType: (int){0} or (string){1}", (int)i_Settings.InfoType, i_Settings.InfoType.ToString()));
@@ -128,7 +137,14 @@ namespace Game.Display.Table
             }
         }
 
-        
+        private void OnEnable()
+        {
+            if (m_DeferedListElementsUpdate == null)
+            {
+                m_DeferedListElementsUpdate = StartCoroutine(DeferedListElementsUpdateFunc());
+            }
+        }
+
         private void SortName(bool i_Asc)
         {
             m_ProcessingList = i_Asc ? m_ProcessingList.ThenBy(x => x.Name) : m_ProcessingList.ThenByDescending(x => x.Name);
@@ -253,10 +269,23 @@ namespace Game.Display.Table
             {
                 m_VisibleSortInfoList.Add(i_SortInfo);
             }
+
+            if (m_DeferedListElementsUpdate == null)
+            {
+                m_DeferedListElementsUpdate = StartCoroutine(DeferedListElementsUpdateFunc());
+            }
+        }
+        
+        private IEnumerator DeferedListElementsUpdateFunc()
+        {
+            yield return null;
+
             if (SurvivorsTableScreen.Instance != null)
             {
                 SurvivorsTableScreen.Instance.UpdateListElementsDisplay();
             }
+
+            m_DeferedListElementsUpdate = null;
         }
     }
 }

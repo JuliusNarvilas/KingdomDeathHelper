@@ -22,24 +22,28 @@ namespace Game.Display.Screen
             if (m_LastScreenWidth != UnityEngine.Screen.width)
             {
                 m_LastScreenWidth = UnityEngine.Screen.width;
-				UpdateListElementsDisplay();
+				UpdateContentFitting();
             }
         }
 
-		public void UpdateListElementsDisplay()
+		public void UpdateContentFitting()
         {
 			var parentRect = (RectTransform)m_ContentFittingRect.parent;
             float fullContentWidth = parentRect.rect.width;
             
+            // stretch mode
             if (fullContentWidth > m_RectMinWidth)
             {
+                // width correction that removes a scrollbar on some devices 
                 float contentSizeError = 4;
                 float newContentFitWidth = fullContentWidth - contentSizeError;
+                // slowly introduce / remove the width adjustment when going between scroll mode and stretch mode
                 float errorOffsetIntroduction = Mathf.Min((fullContentWidth - m_RectMinWidth) / contentSizeError, 1.0f);
                 m_ContentFittingRect.sizeDelta = new Vector2(Mathf.Lerp(fullContentWidth, newContentFitWidth, errorOffsetIntroduction), 0);
             }
-            else
+            else // scroll mode
             {
+                // setting min allowed display width
                 m_ContentFittingRect.sizeDelta = new Vector2(m_RectMinWidth, 0);
             }
         }

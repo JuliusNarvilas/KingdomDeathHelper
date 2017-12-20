@@ -2,6 +2,7 @@
 using Game.Display.Table;
 using Game.Model.Character;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -21,18 +22,29 @@ namespace Game.Display.Screen
         private Toggle m_RetiredCheckbox;
         [SerializeField]
         private Toggle m_DeadCheckbox;
-
         [SerializeField]
         private Toggle m_SkipHunt;
 
-        [SerializeField]
-        private ContentSizeFitter m_ContentFitting;
 
         [SerializeField]
         private SurvivorsTableSortControl m_SortControl;
+        [SerializeField]
+        private RectTransform m_ContentFittingRect;
+
 
         private List<Survivor> m_Survivors;
+
+
+        //TODO: remove serialization. used for testing right now
+        [SerializeField]
+        private List<SurvivorsTableItem> m_SurvivorsTableItems;
         private IOrderedEnumerable<Survivor> m_FilteredList;
+        
+
+        private float m_LastScreenWidth = 0f;
+        private float m_FittingMinWidth = 0f;
+        private float m_FittingAvailableWidth = 0f;
+        private Coroutine m_UpdateFittingCoroutine;
 
         private void Awake()
         {
@@ -62,6 +74,7 @@ namespace Game.Display.Screen
                 Log.ProductionLogError("SurvivorListScreen already exists.");
             }
 
+            m_LastScreenWidth = UnityEngine.Screen.width;
             //TODO: load survivors
         }
 
@@ -105,25 +118,88 @@ namespace Game.Display.Screen
 
             m_SortControl.Sort(m_FilteredList);
         }
-        
+
+
+        private void OnEnable()
+        {
+            UpdateListElementsDisplay();
+        }
+
+
+        private void Update()
+        {
+            if (m_LastScreenWidth != UnityEngine.Screen.width)
+            {
+                m_LastScreenWidth = UnityEngine.Screen.width;
+                UpdateContentFitting();
+            }
+        }
 
         public void UpdateListElementsDisplay()
-        {
-            //force scroll bar to appear when the available width is too small (ContentSizeFitter.FitMode.MinSize)
-            //or force expand table item elements when the available width is too large (ContentSizeFitter.FitMode.Unconstrained)
-            var parentRect = m_ContentFitting.transform.parent.GetComponent<RectTransform>();
-            var fitterRect = m_ContentFitting.GetComponent<RectTransform>();
-            if(fitterRect.rect.width > parentRect.rect.width )
+        {   
+            if(m_SortControl != null)
             {
-                m_ContentFitting.horizontalFit = ContentSizeFitter.FitMode.MinSize;
-            }
-            else
-            {
-                m_ContentFitting.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+                //list should be sorted in the right display order
+                var visibleInfo = m_SortControl.GetVisibleSortInfo();
+                int count = m_SurvivorsTableItems.Count;
+                for (int i = 0; i < count; ++i)
+                {
+                    m_SurvivorsTableItems[i].DisplayElements(visibleInfo);
+                }
             }
 
-            //TODO hide elements if needed
-            //TODO iterate through survivors and update their element visability
+            UpdateContentFitting();
         }
+        
+        public void UpdateContentFitting()
+        {
+            if(m_UpdateFittingCoroutine != null)
+            {
+                StopCoroutine(m_UpdateFittingCoroutine);
+                m_UpdateFittingCoroutine = null;
+            }
+            m_UpdateFittingCoroutine = StartCoroutine(UpdateContentFittingWhenReady());
+        }
+
+        public IEnumerator UpdateContentFittingWhenReady()
+        {
+            int attemptCounter = 20;
+            float newFittingMinWidth = m_FittingMinWidth;
+            float newFittingAvailableWidth = m_FittingAvailableWidth;
+            while (newFittingMinWidth == m_FittingMinWidth && newFittingAvailableWidth == m_FittingAvailableWidth)
+            {
+                if (--attemptCounter < 0)
+                {
+                    yield break;
+                }
+                yield return null;
+                newFittingMinWidth = LayoutUtility.GetMinWidth(m_ContentFittingRect);
+                var parentRect = (RectTransform)m_ContentFittingRect.parent;
+                newFittingAvailableWidth = parentRect.rect.width;
+            }
+
+            m_FittingMinWidth = newFittingMinWidth;
+            m_FittingAvailableWidth = newFittingAvailableWidth;
+
+            bool stretchMode = m_FittingAvailableWidth > m_FittingMinWidth;
+            // stretch mode
+            if (m_FittingAvailableWidth > m_FittingMinWidth)
+            {
+                // width correction that removes a scrollbar on some devices 
+                //float contentSizeError = 4;
+                //float newContentFitWidth = m_FittingAvailableWidth - contentSizeError;
+                // slowly introduce / remove the width adjustment when going between scroll mode and stretch mode
+                //float errorOffsetIntroduction = Mathf.Min((m_FittingAvailableWidth - m_FittingMinWidth) / contentSizeError, 1.0f);
+                //m_ContentFittingRect.sizeDelta = new Vector2(Mathf.Lerp(m_FittingAvailableWidth, newContentFitWidth, errorOffsetIntroduction), 0);
+                m_ContentFittingRect.sizeDelta = new Vector2(m_FittingAvailableWidth, 0);
+            }
+            else // scroll mode
+            {
+                m_ContentFittingRect.sizeDelta = new Vector2(m_FittingMinWidth, 0);
+            }
+
+            m_UpdateFittingCoroutine = null;
+        }
+
     }
 }

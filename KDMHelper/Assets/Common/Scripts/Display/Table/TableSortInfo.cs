@@ -11,6 +11,24 @@ namespace Common.Display.Table
 
     public class TableSortInfo : MonoBehaviour
     {
+        public class SiblingIndexComparer : Comparer<TableSortInfo>
+        {
+            private int m_Modifier;
+
+            private SiblingIndexComparer(bool i_Ascending)
+            {
+                m_Modifier = i_Ascending ? 1 : -1;
+            }
+
+            public override int Compare(TableSortInfo x, TableSortInfo y)
+            {
+                return x.transform.GetSiblingIndex().CompareTo(y.transform.GetSiblingIndex()) * m_Modifier;
+            }
+
+            public static SiblingIndexComparer Ascending = new SiblingIndexComparer(true);
+            public static SiblingIndexComparer Descending = new SiblingIndexComparer(false);
+        }
+
         [SerializeField]
         private UnityEngine.UI.Text m_Text;
 
@@ -25,10 +43,14 @@ namespace Common.Display.Table
         private ITableSortReceiver m_InfoReceiver;
         private Action<bool> m_SortAction;
 
-        public void Init(ITableSortReceiver i_InfoReceiver, Action<bool> i_SortAction)
+        [NonSerialized]
+        public object Data;
+
+        public void Init(ITableSortReceiver i_InfoReceiver, Action<bool> i_SortAction, object i_Data)
         {
             m_InfoReceiver = i_InfoReceiver;
             m_SortAction = i_SortAction;
+            Data = i_Data;
         }
 
         public void OnEnable()
