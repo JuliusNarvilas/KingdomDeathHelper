@@ -14,5 +14,11 @@ namespace Assets.Game.Scripts.Scene
         {
             ApplicationManager.Initialise();
         }
+
+        // temp method for testing
+        public void LoadScene(string i_SceneName)
+        {
+            SceneManager.LoadScene(i_SceneName);
+        }
     }
 }

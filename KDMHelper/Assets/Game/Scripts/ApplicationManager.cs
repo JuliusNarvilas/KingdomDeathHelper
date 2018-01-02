@@ -2,6 +2,7 @@
 using Game.IO.InfoDB;
 using Game.Properties;
 using Game.Properties.Modifiers;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
@@ -35,6 +36,11 @@ namespace Game
         [SerializeField]
         private InfoDBController m_InfoDB;
         public InfoDBController InfoDB { get { return m_InfoDB; } }
+
+        public event Action OnScreenSizeChange;
+
+        private float m_LastScreenWidth = 0f;
+
 
         protected new void Awake()
         {
@@ -86,6 +92,23 @@ namespace Game
             Debug.Log(result.GetModifierCount());
 
             mem.Dispose();
+        }
+
+        private void OnEnable()
+        {
+            m_LastScreenWidth = 0f;
+        }
+
+        private void Update()
+        {
+            if (m_LastScreenWidth != UnityEngine.Screen.width)
+            {
+                m_LastScreenWidth = UnityEngine.Screen.width;
+                if(OnScreenSizeChange != null)
+                {
+                    OnScreenSizeChange();
+                }
+            }
         }
 
         private void OnApplicationQuit()

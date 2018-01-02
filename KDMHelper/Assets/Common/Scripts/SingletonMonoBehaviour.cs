@@ -57,11 +57,6 @@ namespace Common
                                 _instance = singleton.AddComponent<T>();
                                 singleton.name = "(singleton) " + typeof(T).ToString();
 
-                                if (Application.isPlaying)
-                                {//invalid for execution in editor mode
-                                    DontDestroyOnLoad(singleton);
-                                }
-
                                 Debug.Log("[Singleton] An instance of " + typeof(T) +
                                     " is needed in the scene, so '" + singleton +
                                     "' was created with DontDestroyOnLoad.");
@@ -83,6 +78,11 @@ namespace Common
 
         protected void Awake()
         {
+            if (Application.isPlaying)
+            {//invalid for execution in editor mode
+                DontDestroyOnLoad(gameObject);
+            }
+
             applicationIsQuitting = false;
         }
 

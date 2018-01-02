@@ -17,16 +17,20 @@ namespace Game.Display.Screen
 
         private float m_LastScreenWidth = 0f;
 
-        private void Update()
+        private void Start()
         {
-            if (m_LastScreenWidth != UnityEngine.Screen.width)
+            ApplicationManager.Instance.OnScreenSizeChange += UpdateContentFitting;
+        }
+
+        private void OnDestroy()
+        {
+            if (ApplicationManager.Instance != null)
             {
-                m_LastScreenWidth = UnityEngine.Screen.width;
-				UpdateContentFitting();
+                ApplicationManager.Instance.OnScreenSizeChange -= UpdateContentFitting;
             }
         }
 
-		public void UpdateContentFitting()
+        public void UpdateContentFitting()
         {
 			var parentRect = (RectTransform)m_ContentFittingRect.parent;
             float fullContentWidth = parentRect.rect.width;

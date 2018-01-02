@@ -32,7 +32,7 @@ namespace Game.Display.Screen
         private RectTransform m_ContentFittingRect;
 
 
-        private List<Survivor> m_Survivors;
+        private List<Survivor> m_Survivors = new List<Survivor>();
 
 
         //TODO: remove serialization. used for testing right now
@@ -40,8 +40,7 @@ namespace Game.Display.Screen
         private List<SurvivorsTableItem> m_SurvivorsTableItems;
         private IOrderedEnumerable<Survivor> m_FilteredList;
         
-
-        private float m_LastScreenWidth = 0f;
+        
         private float m_FittingMinWidth = 0f;
         private float m_FittingAvailableWidth = 0f;
         private Coroutine m_UpdateFittingCoroutine;
@@ -74,8 +73,12 @@ namespace Game.Display.Screen
                 Log.ProductionLogError("SurvivorListScreen already exists.");
             }
 
-            m_LastScreenWidth = UnityEngine.Screen.width;
             //TODO: load survivors
+        }
+
+        private void Start()
+        {
+            ApplicationManager.Instance.OnScreenSizeChange += UpdateContentFitting;
         }
 
         private void OnDestroy()
@@ -83,6 +86,10 @@ namespace Game.Display.Screen
             if (s_Instance == this)
             {
                 s_Instance = null;
+            }
+            if (ApplicationManager.Instance != null)
+            {
+                ApplicationManager.Instance.OnScreenSizeChange -= UpdateContentFitting;
             }
         }
 
@@ -123,16 +130,6 @@ namespace Game.Display.Screen
         private void OnEnable()
         {
             UpdateListElementsDisplay();
-        }
-
-
-        private void Update()
-        {
-            if (m_LastScreenWidth != UnityEngine.Screen.width)
-            {
-                m_LastScreenWidth = UnityEngine.Screen.width;
-                UpdateContentFitting();
-            }
         }
 
         public void UpdateListElementsDisplay()

@@ -92,9 +92,28 @@ namespace Game.IO.InfoDB
             return  new InfoDBColumn(this, i_Name);
         }
 
-        public InfoDBRecord Find(string i_ColumnName, string i_ValueMatch)
+        public InfoDBRecord Find(string i_ColumnName, string i_ValueMatch, bool caseSensitive = false, bool containsMatch = false)
         {
-            return new InfoDBRecord(this, i_ColumnName, i_ValueMatch);
+            return InfoDBRecord.FindRecord(this, i_ColumnName, i_ValueMatch, caseSensitive, containsMatch);
+        }
+
+        public List<InfoDBRecord> FindAll(string i_ColumnName, string i_ValueMatch, bool caseSensitive = false, bool containsMatch = false)
+        {
+            var result = new List<InfoDBRecord>();
+            InfoDBRecord currentRecord = new InfoDBRecord(null, null, -1);
+            while(true)
+            {
+                currentRecord = InfoDBRecord.FindRecord(this, i_ColumnName, i_ValueMatch, caseSensitive, containsMatch, currentRecord.Index + 1);
+                if(currentRecord.Index >= 0)
+                {
+                    result.Add(currentRecord);
+                }
+                else
+                {
+                    break;
+                }
+            }
+            return result;
         }
 
         private bool TryGetVersionNumber(string fileContent, out int version)
@@ -275,7 +294,7 @@ namespace Game.IO.InfoDB
                 }
                 m_Values.Add(i_Line.ToArray());
             }
-            else if (i_LineIndex > 1)
+            else if (i_LineIndex == 1)
             {
                 m_ColumnNames = i_Line.ToArray();
                 m_Values = new List<string[]>();

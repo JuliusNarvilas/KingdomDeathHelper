@@ -33,47 +33,64 @@ namespace Game.IO.InfoDB
 
     public struct InfoDBRecord
     {
-        private readonly InfoDBSource m_Source;
+        public InfoDBSource Source;
         public string[] Values;
         public int Index;
 
-        public InfoDBRecord(InfoDBSource i_Source, string i_ColumnName, string i_ValueMatch)
+        public static InfoDBRecord FindRecord(InfoDBSource i_Source, string i_ColumnName, string i_ValueMatch, bool caseSensitive, bool containsMatch, int recordStartIndex = 0)
         {
-            m_Source = i_Source;
-            Values = null;
-            Index = -1;
-
+            var result = new InfoDBRecord(i_Source, null, -1);
+            
+            if (recordStartIndex < 0)
+            {
+                recordStartIndex = 0;
+            }
+            System.StringComparison comparisonType = caseSensitive ? System.StringComparison.InvariantCulture : System.StringComparison.InvariantCultureIgnoreCase;
             var columnNames = i_Source.ColumnNames;
             int columnCount = columnNames.Length;
             for (int i = 0; i < columnCount; ++i)
             {
-                if (i_ColumnName == columnNames[i])
+                bool columnMatch = string.Compare(columnNames[i], i_ColumnName, comparisonType) == 0;
+                if (columnMatch)
                 {
                     int recordCount = i_Source.ValueCount;
-                    for (int j = 0; j < recordCount; ++j)
+                    for (int j = recordStartIndex; j < recordCount; ++j)
                     {
-                        if (i_ValueMatch == i_Source.GetValue(j, i))
+                        string[] recordValues = i_Source.GetValue(j);
+                        string value = recordValues[i];
+                        bool foundRecord = false;
+                        if (containsMatch)
                         {
-                            Values = i_Source.GetValue(j);
-                            Index = j;
+                            foundRecord = value.IndexOf(i_ValueMatch, comparisonType) >= 0;
+                        }
+                        else
+                        {
+                            foundRecord = string.Compare(value, i_ValueMatch, comparisonType) == 0;
+                        }
+                        if (foundRecord)
+                        {
+                            result.Values = recordValues;
+                            result.Index = j;
                             break;
                         }
                     }
                     break;
                 }
             }
+
+            return result;
         }
 
         public InfoDBRecord(InfoDBSource i_Source, string[] i_Values, int i_Index)
         {
-            m_Source = i_Source;
+            Source = i_Source;
             Values = i_Values;
             Index = i_Index;
         }
 
         public string GetColumn(string key)
         {
-            var columnKeys = m_Source.ColumnNames;
+            var columnKeys = Source.ColumnNames;
             for (int i = 0; i < columnKeys.Length; ++i)
             {
                 if (key == columnKeys[i])

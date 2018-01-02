@@ -90,7 +90,10 @@ namespace Common.Display.Table
             if (i_State == m_State)
                 return;
 
-            if (m_State == ESortType.None)
+            ESortType oldState = m_State;
+            m_State = i_State;
+
+            if (oldState == ESortType.None)
             {
                 //TODO: Spawn new display indicator
                 m_InfoReceiver.AppendSortInfo(this);
@@ -107,9 +110,13 @@ namespace Common.Display.Table
                     m_InfoReceiver.TriggerOnSortChange();
                 }
             }
-            m_State = i_State;
+            UpdateSortIndicators();
         }
 
+        /// <summary>
+        /// The same as <see cref="SetState(ESortType)"/> but does not inform <see cref="m_InfoReceiver"/> of the change.
+        /// </summary>
+        /// <param name="i_State"></param>
         public void SetStateSilent(ESortType i_State)
         {
             if (i_State == m_State)
@@ -127,6 +134,40 @@ namespace Common.Display.Table
                 }
             }
             m_State = i_State;
+            UpdateSortIndicators();
+        }
+
+        public void CycleState()
+        {
+            ESortType nextState = (ESortType) ((int)m_State + 1);
+            if(!Enum.IsDefined(typeof(ESortType), nextState))
+            {
+                nextState = ESortType.None;
+            }
+            SetState(nextState);
+        }
+
+        private void UpdateSortIndicators()
+        {
+            bool ascOn = true;
+            bool desOn = true;
+            switch(m_State)
+            {
+                case ESortType.Ascending:
+                    desOn = false;
+                    break;
+                case ESortType.Descending:
+                    ascOn = false;
+                    break;
+            }
+            if(m_SortAscIndicator != null)
+            {
+                m_SortAscIndicator.enabled = ascOn;
+            }
+            if (m_SortDesIndicator != null)
+            {
+                m_SortDesIndicator.enabled = desOn;
+            }
         }
 
 
