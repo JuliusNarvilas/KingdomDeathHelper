@@ -24,7 +24,7 @@ namespace Common.Properties.Numerical
         /// Getter for the modifier reader interface.
         /// </summary>
         /// <returns>The modifier reader interface.</returns>
-        TModifierReader GetReader();
+        TModifierReader GetReader(TContext i_Context);
     }
 
 

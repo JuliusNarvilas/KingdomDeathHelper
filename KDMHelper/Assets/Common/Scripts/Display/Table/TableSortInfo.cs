@@ -30,12 +30,14 @@ namespace Common.Display.Table
         }
 
         [SerializeField]
-        private UnityEngine.UI.Text m_Text;
+        public UnityEngine.UI.Text Text;
+        [SerializeField]
+        public Image TypeImage;
 
         [SerializeField]
-        private Image m_SortAscIndicator;
+        public Image SortAscIndicator;
         [SerializeField]
-        private Image m_SortDesIndicator;
+        public Image SortDesIndicator;
 
         private ESortType m_State = ESortType.None;
         public ESortType State { get { return m_State; } }
@@ -45,6 +47,9 @@ namespace Common.Display.Table
 
         [NonSerialized]
         public object Data;
+
+        [NonSerialized]
+        public TableSortInfoDisplay Display = null;
 
         public void Init(ITableSortReceiver i_InfoReceiver, Action<bool> i_SortAction, object i_Data)
         {
@@ -96,20 +101,26 @@ namespace Common.Display.Table
             if (oldState == ESortType.None)
             {
                 //TODO: Spawn new display indicator
-                m_InfoReceiver.AppendSortInfo(this);
+                m_InfoReceiver.ApplySort(this);
             }
             else
             {
                 if (i_State == ESortType.None)
                 {
                     //TODO: delete display indicator
-                    m_InfoReceiver.RemoveSortInfo(this);
+                    m_InfoReceiver.RemoveSort(this);
                 }
                 else
                 {
                     m_InfoReceiver.TriggerOnSortChange();
                 }
             }
+
+            if(Display != null)
+            {
+                Display.Set(this);
+            }
+
             UpdateSortIndicators();
         }
 
@@ -134,6 +145,13 @@ namespace Common.Display.Table
                 }
             }
             m_State = i_State;
+
+
+            if (Display != null)
+            {
+                Display.Set(this);
+            }
+
             UpdateSortIndicators();
         }
 
@@ -160,13 +178,13 @@ namespace Common.Display.Table
                     ascOn = false;
                     break;
             }
-            if(m_SortAscIndicator != null)
+            if(SortAscIndicator != null)
             {
-                m_SortAscIndicator.enabled = ascOn;
+                SortAscIndicator.enabled = ascOn;
             }
-            if (m_SortDesIndicator != null)
+            if (SortDesIndicator != null)
             {
-                m_SortDesIndicator.enabled = desOn;
+                SortDesIndicator.enabled = desOn;
             }
         }
 

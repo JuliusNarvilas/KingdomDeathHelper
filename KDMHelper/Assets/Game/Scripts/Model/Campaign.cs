@@ -18,6 +18,11 @@ namespace Game.Model
     [Serializable]
     public class Campaign
     {
+        public static Campaign GetCurrent()
+        {
+            return null;
+        }
+
         public string Name;
         public List<SettlementTimelineRecord> Events;
         

@@ -2,6 +2,7 @@
 using Common.Properties.Enumeration;
 using Common.Properties.Numerical;
 using Game.Properties;
+using Game.Properties.Modifiers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,20 +44,24 @@ namespace Game.Model.Character
         public SurvivalProperty Survival;
 
         public int Courage;
-        public List<EnumProperty<string>> CourageAbility;
+        public List<EnumProperty<string>> CourageAbility = new List<EnumProperty<string>>();
         public int Understanding;
-        public List<EnumProperty<string>> UnderstandingAbility;
+        public List<EnumProperty<string>> UnderstandingAbility = new List<EnumProperty<string>>();
 
-        public List<EnumProperty<string>> Disorders;
-        public List<EnumProperty<string>> FightingArts;
-        public List<EnumProperty<string>> AbilitiesAndImpairments;
+        public List<EnumProperty<string>> Disorders = new List<EnumProperty<string>>();
+        public List<EnumProperty<string>> FightingArts = new List<EnumProperty<string>>();
+        public List<EnumProperty<string>> AbilitiesAndImpairments = new List<EnumProperty<string>>();
 
-        public SurvivorStats Stats;
-        public SurvivorArmor Armor;
+        public SurvivorStats Stats = new SurvivorStats();
+        public SurvivorArmor Armor = new SurvivorArmor();
 
         public int Rage;
         public int Bleeding;
 
         
+        public Survivor()
+        {
+            Stats.Speed.AddModifier(new SurvivorFrenzyMod());
+        }
     }
 }

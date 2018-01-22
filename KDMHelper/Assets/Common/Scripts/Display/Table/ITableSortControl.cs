@@ -22,8 +22,8 @@ namespace Common.Display.Table
         void TriggerDisabledSortInfo(TableSortInfo i_SortInfo);
         void TriggerEnabledSortInfo(TableSortInfo i_SortInfo);
 
-        void AppendSortInfo(TableSortInfo i_SortInfo);
-        void RemoveSortInfo(TableSortInfo i_SortInfo);
+        void ApplySort(TableSortInfo i_SortInfo);
+        void RemoveSort(TableSortInfo i_SortInfo);
         void ClearSortInfo();
         void TriggerOnSortChange();
     }

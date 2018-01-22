@@ -1,4 +1,6 @@
 ﻿
+using System;
+
 namespace Common.Properties.Numerical.Specializations
 {
 
@@ -57,7 +59,7 @@ namespace Common.Properties.Numerical.Specializations
             return m_Order;
         }
 
-        public INumericalPropertyModifierReader<int> GetReader()
+        public INumericalPropertyModifierReader<int> GetReader(TContext i_Context)
         {
             return this;
         }
@@ -83,7 +85,7 @@ namespace Common.Properties.Numerical.Specializations
             return m_Order;
         }
 
-        public INumericalPropertyModifierReader<float> GetReader()
+        public INumericalPropertyModifierReader<float> GetReader(TContext i_Context)
         {
             return this;
         }
@@ -109,7 +111,7 @@ namespace Common.Properties.Numerical.Specializations
             return m_Order;
         }
 
-        public INumericalPropertyModifierReader<long> GetReader()
+        public INumericalPropertyModifierReader<long> GetReader(TContext i_Context)
         {
             return this;
         }
@@ -135,7 +137,7 @@ namespace Common.Properties.Numerical.Specializations
             return m_Order;
         }
 
-        public INumericalPropertyModifierReader<double> GetReader()
+        public INumericalPropertyModifierReader<double> GetReader(TContext i_Context)
         {
             return this;
         }

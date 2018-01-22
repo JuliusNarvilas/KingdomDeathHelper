@@ -4,31 +4,30 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml;
+using Common.Properties.Numerical;
 
 namespace Game.Properties.Modifiers
 {
     public class EnumReferencedNumericalPropertyModifier : KDMNumericalPropertyModifier
     {
         protected EnumProperty<string> m_EnumProperty;
+        protected int m_Value;
 
+        public string GetDescription() { return m_EnumProperty.Content; }
 
-        public EnumReferencedNumericalPropertyModifier() : base(0, 1)
-        {
-        }
-
-        public EnumReferencedNumericalPropertyModifier(EnumProperty<string> i_ReferencedProperty, int i_ModifierValue) : base(i_ModifierValue, 1)
+        public EnumReferencedNumericalPropertyModifier(EnumProperty<string> i_ReferencedProperty, int i_ModifierValue) : base(i_ReferencedProperty.GetValue())
         {
             m_EnumProperty = i_ReferencedProperty;
         }
 
-        public override string GetDescription()
+        public override KDMNumericalPropertyModifierReader GetReader(KDMNumericalPropertyContext i_Context)
         {
-            return m_EnumProperty.Content;
-        }
-
-        public override string GetName()
-        {
-            return m_EnumProperty.GetValue();
+            return new KDMNumericalPropertyModifierReader()
+            {
+                Value = m_Value,
+                Name = m_Name,
+                Description = m_EnumProperty.Content
+            };
         }
 
         public override void ReadXml(XmlReader reader)
@@ -40,6 +39,7 @@ namespace Game.Properties.Modifiers
             {
                 return;
             }
+            base.ReadXml(reader);
 
             reader.ReadStartElement("Value");
             m_Value = reader.ReadContentAsInt();
@@ -47,15 +47,20 @@ namespace Game.Properties.Modifiers
 
             string factoryName = reader.ReadElementString("Factory");
             var factory = EnumProperty<string>.Generator.FindFactory(factoryName);
-            string propertyName = reader.ReadElementString("Name");
-            m_EnumProperty = factory.Find(propertyName);
+            m_EnumProperty = factory.Find(m_Name);
+        }
+
+        public override void Update(ref NumericalPropertyChangeEventStruct<int, KDMNumericalPropertyContext, KDMNumericalPropertyModifierReader> i_EventData)
+        {
+            throw new NotImplementedException();
         }
 
         public override void WriteXml(XmlWriter writer)
         {
+            base.WriteXml(writer);
+
             writer.WriteElementString("Value", m_Value.ToString());
             writer.WriteElementString("Factory", m_EnumProperty.Factory.Name);
-            writer.WriteElementString("Name", m_EnumProperty.GetValue());
         }
     }
 }

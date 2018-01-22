@@ -99,29 +99,47 @@ namespace Game.Properties
 
     */
 
-    public class KDMNumericalProperty : NumericalProperty<int, int, KDMNumericalPropertyModifier>, IXmlSerializable
+    public class KDMNumericalProperty : NumericalProperty<int, KDMNumericalPropertyContext, KDMNumericalPropertyModifierReader>, IXmlSerializable
     {
         private static XmlSerializerNamespaces s_Namespaces;
-        private static XmlSerializer s_CustomModSerializer;
-        private static XmlSerializer s_EnumModSerializer;
 
         static KDMNumericalProperty()
         {
             s_Namespaces = new XmlSerializerNamespaces();
             s_Namespaces.Add(string.Empty, string.Empty);
-            s_CustomModSerializer = new XmlSerializer(typeof(CustomNumericalPropertyModifier));
-            s_EnumModSerializer = new XmlSerializer(typeof(EnumReferencedNumericalPropertyModifier));
         }
 
-        public KDMNumericalProperty() : base(new NumericalPropertyIntData(0))
+        public KDMNumericalProperty(string i_Name) : base(new NumericalPropertyIntData(0))
         {
+            m_Name = i_Name;
         }
-        public KDMNumericalProperty(int i_Value) : base(new NumericalPropertyIntData(i_Value))
+        public KDMNumericalProperty(string i_Name, int i_Value) : base(new NumericalPropertyIntData(i_Value))
         {
+            m_Name = i_Name;
         }
-        public KDMNumericalProperty(INumericalPropertyData<int> i_Value) : base(i_Value)
+        public KDMNumericalProperty(string i_Name, INumericalPropertyData<int> i_Value) : base(i_Value)
         {
+            m_Name = i_Name;
         }
+
+        protected string m_Name;
+
+        public string GetName()
+        {
+            return m_Name;
+        }
+
+
+        public virtual KDMNumericalPropertyContext GetContext()
+        {
+            return new KDMNumericalPropertyContext()
+            {
+                Property = this,
+                Survivor = null,
+                Campaign = Model.Campaign.GetCurrent()
+            };
+        }
+
 
         public XmlSchema GetSchema()
         {
@@ -146,15 +164,20 @@ namespace Game.Properties
             {
                 while (reader.NodeType != XmlNodeType.EndElement)
                 {
-                    if(reader.Name == typeof(CustomNumericalPropertyModifier).Name)
+                    Type modifierType = Type.GetType(reader.Name);
+                    if(modifierType != null)
                     {
-                        var newMod = s_CustomModSerializer.Deserialize(reader) as CustomNumericalPropertyModifier;
-                        m_Modifiers.Add(newMod);
-                    }
-                    else if(reader.Name == typeof(EnumReferencedNumericalPropertyModifier).Name)
-                    {
-                        var newMod = s_EnumModSerializer.Deserialize(reader) as EnumReferencedNumericalPropertyModifier;
-                        m_Modifiers.Add(newMod);
+                        XmlSerializer modSerializer = new XmlSerializer(modifierType);
+                        if(typeof(KDMNumericalPropertyModifier).IsAssignableFrom(modifierType))
+                        {
+                            var newMod = modSerializer.Deserialize(reader) as KDMNumericalPropertyModifier;
+                            m_Modifiers.Add(newMod);
+                        }
+                        else if(typeof(EnumReferencedNumericalPropertyModifier).IsAssignableFrom(modifierType))
+                        {
+                            var newMod = modSerializer.Deserialize(reader) as KDMNumericalPropertyModifier;
+                            m_Modifiers.Add(newMod);
+                        }
                     }
                     reader.MoveToContent();
                 }
@@ -172,10 +195,8 @@ namespace Game.Properties
             for(int i = 0; i < count; ++i)
             {
                 var mod = m_Modifiers[i];
-                if(mod is CustomNumericalPropertyModifier)
-                {
-                    s_CustomModSerializer.Serialize(writer, mod, s_Namespaces);
-                }
+                XmlSerializer modSerializer = new XmlSerializer(mod.GetType());
+                modSerializer.Serialize(writer, mod, s_Namespaces);
             }
 
             writer.WriteEndElement();

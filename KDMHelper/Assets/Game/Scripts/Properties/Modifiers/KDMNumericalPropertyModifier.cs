@@ -7,52 +7,69 @@ using System.Xml.Serialization;
 
 namespace Game.Properties.Modifiers
 {
-    public abstract class KDMNumericalPropertyModifier : INumericalPropertyModifier<int, int, KDMNumericalPropertyModifier>, INumericalPropertyModifierReader<int>, IXmlSerializable
+    public class KDMNumericalPropertyModifierReader : INumericalPropertyModifierReader<int>
     {
-        protected int m_Value;
-        protected int m_Order;
-
-        public KDMNumericalPropertyModifier()
-        {
-            m_Value = 0;
-            m_Order = 1;
-        }
-
-        public KDMNumericalPropertyModifier(int i_Value, int i_Order = 1)
-        {
-            m_Value = i_Value;
-            m_Order = i_Order;
-        }
+        public int Value;
+        public string Name;
+        public string Description;
 
         public int GetModifier()
         {
-            return m_Value;
+            return Value;
         }
+    }
+
+    public abstract class KDMNumericalPropertyModifier : INumericalPropertyModifier<int, KDMNumericalPropertyContext, KDMNumericalPropertyModifierReader>, IXmlSerializable
+    {
+        protected int m_Order;
+        protected string m_Name;
+
+        public string GetName() { return m_Name; }
+
+        public KDMNumericalPropertyModifier(string i_Name, int i_Order = 1)
+        {
+            m_Order = i_Order;
+            m_Name = i_Name;
+        }
+
+        public abstract KDMNumericalPropertyModifierReader GetReader(KDMNumericalPropertyContext i_Context);
+
+        public abstract void Update(ref NumericalPropertyChangeEventStruct<int, KDMNumericalPropertyContext, KDMNumericalPropertyModifierReader> i_EventData);
 
         public int GetOrder()
         {
             return m_Order;
         }
 
+        public virtual bool SerializeForProperty(KDMNumericalProperty i_Property)
+        {
+            return true;
+        }
+
         public XmlSchema GetSchema()
         {
             return null;
         }
-        
-        public KDMNumericalPropertyModifier GetReader()
+        public virtual void ReadXml(XmlReader reader)
         {
-            return this;
-        }
+            bool wasEmpty = reader.IsEmptyElement;
+            reader.Read();
 
-        public void Update(ref NumericalPropertyChangeEventStruct<int, int, KDMNumericalPropertyModifier> i_EventData)
+            if (wasEmpty)
+            {
+                return;
+            }
+
+            reader.ReadStartElement("Order");
+            m_Order = reader.ReadContentAsInt();
+            reader.ReadEndElement();
+
+            m_Name = reader.ReadElementString("Name");
+        }
+        public virtual void WriteXml(XmlWriter writer)
         {
-            i_EventData.NewModifier += m_Value;
+            writer.WriteElementString("Order", m_Order.ToString());
+            writer.WriteElementString("Name", m_Name);
         }
-
-        public abstract string GetName();
-        public abstract string GetDescription();
-        
-        public abstract void ReadXml(XmlReader reader);
-        public abstract void WriteXml(XmlWriter writer);
     }
 }

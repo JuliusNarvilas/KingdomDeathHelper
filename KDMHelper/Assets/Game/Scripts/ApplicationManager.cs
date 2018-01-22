@@ -54,7 +54,7 @@ namespace Game
             s_Namespaces.Add(string.Empty, string.Empty);
             XmlSerializer s_Serializer = new XmlSerializer(typeof(KDMNumericalProperty));
 
-            KDMNumericalProperty test = new KDMNumericalProperty(2);
+            KDMNumericalProperty test = new KDMNumericalProperty("test", 2);
             test.AddModifier(new CustomNumericalPropertyModifier(3));
             test.AddModifier(new CustomNumericalPropertyModifier(-1));
             test.AddModifier(new CustomNumericalPropertyModifier(2));

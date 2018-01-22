@@ -53,8 +53,16 @@ namespace Game.Display.Table
 
         private IOrderedEnumerable<Survivor> m_ProcessingList;
 
+
+        [SerializeField]
+        private Transform m_SortDisplayContainer;
+        [SerializeField]
+        private TableSortInfoDisplay m_SortDisplayElement;
+
+
         private List<TableSortInfo> m_ActiveSortInfoList = new List<TableSortInfo>();
         private List<TableSortInfo> m_VisibleSortInfoList = new List<TableSortInfo>();
+        private List<TableSortInfoDisplay> m_SortDisplayElements = new List<TableSortInfoDisplay>();
         public List<TableSortInfo> GetVisibleSortInfo()
         {
             return m_VisibleSortInfoList.ToList();
@@ -219,19 +227,28 @@ namespace Game.Display.Table
             TriggerOnSortChange();
         }
 
-        public void AppendSortInfo(TableSortInfo i_SortInfo)
+        public void ApplySort(TableSortInfo i_SortInfo)
         {
             if (!m_ActiveSortInfoList.Contains(i_SortInfo))
             {
                 m_ActiveSortInfoList.Add(i_SortInfo);
+                i_SortInfo.Display = Instantiate(m_SortDisplayElement, m_SortDisplayContainer, false);
+                i_SortInfo.Display.gameObject.SetActive(true);
+
                 TriggerOnSortChange();
             }
         }
 
-        public void RemoveSortInfo(TableSortInfo i_SortInfo)
+        public void RemoveSort(TableSortInfo i_SortInfo)
         {
             if(m_ActiveSortInfoList.Remove(i_SortInfo))
             {
+                if(i_SortInfo.Display)
+                {
+                    Destroy(i_SortInfo.Display.gameObject);
+                    i_SortInfo.Display = null;
+                }
+
                 TriggerOnSortChange();
             }
         }
@@ -256,7 +273,7 @@ namespace Game.Display.Table
         public void TriggerDisabledSortInfo(TableSortInfo i_SortInfo)
         {
             m_VisibleSortInfoList.Remove(i_SortInfo);
-            RemoveSortInfo(i_SortInfo);
+            RemoveSort(i_SortInfo);
             if (SurvivorsTableScreen.Instance != null)
             {
                 SurvivorsTableScreen.Instance.UpdateListElementsDisplay();

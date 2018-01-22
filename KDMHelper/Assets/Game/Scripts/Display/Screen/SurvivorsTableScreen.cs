@@ -123,7 +123,7 @@ namespace Game.Display.Screen
                     x.SkipNextHunt == skipHunt;
             }).OrderBy(x => 1);
 
-            m_SortControl.Sort(m_FilteredList);
+            m_FilteredList = m_SortControl.Sort(m_FilteredList);
         }
 
 

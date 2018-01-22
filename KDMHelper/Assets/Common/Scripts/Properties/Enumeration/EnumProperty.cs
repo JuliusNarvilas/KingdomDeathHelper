@@ -59,7 +59,7 @@ namespace Common.Properties.Enumeration
             /// </summary>
             public readonly string Name;
             /// <summary>
-            /// Conatoner for generated <see cref="EnumProperty{TContent}"/> instances.
+            /// Container for generated <see cref="EnumProperty{TContent}"/> instances.
             /// </summary>
             private readonly EnumPropertyCollection m_PropertyCollection = new EnumPropertyCollection();
 

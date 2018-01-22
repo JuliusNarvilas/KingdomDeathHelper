@@ -1,35 +1,37 @@
 ﻿using System;
 using System.Xml;
+using Common.Properties.Numerical;
 
 namespace Game.Properties.Modifiers
 {
     public class CustomNumericalPropertyModifier : KDMNumericalPropertyModifier
     {
-        private string m_Name;
-        private string m_Description;
+        protected string m_Description;
+        protected int m_Value;
 
-        public CustomNumericalPropertyModifier() : base(0)
+        public CustomNumericalPropertyModifier(string i_Name) : base(i_Name)
         {
         }
 
-        public CustomNumericalPropertyModifier(int i_Value) : base(i_Value)
+        public CustomNumericalPropertyModifier(string i_Name, int i_Value) : base(i_Name)
         {
+            m_Value = i_Value;
         }
-        public CustomNumericalPropertyModifier(int i_Value, string i_Name, string i_Description) : base(i_Value)
+        public CustomNumericalPropertyModifier(int i_Value, string i_Name, string i_Description) : base(i_Name)
         {
-            m_Name = i_Name;
             m_Description = i_Description;
         }
 
-        public override string GetName()
+        public override KDMNumericalPropertyModifierReader GetReader(KDMNumericalPropertyContext i_Context)
         {
-            return m_Name;
+            return new KDMNumericalPropertyModifierReader()
+            {
+                Value = m_Value,
+                Name = m_Name,
+                Description = m_Description
+            };
         }
 
-        public override string GetDescription()
-        {
-            return m_Description;
-        }
         public override void ReadXml(XmlReader reader)
         {
             bool wasEmpty = reader.IsEmptyElement;
@@ -39,19 +41,24 @@ namespace Game.Properties.Modifiers
             {
                 return;
             }
+            base.ReadXml(reader);
 
             reader.ReadStartElement("Value");
             m_Value = reader.ReadContentAsInt();
             reader.ReadEndElement();
-
-            m_Name = reader.ReadElementString("Name");
+            
             m_Description = reader.ReadElementString("Description");
+        }
+
+        public override void Update(ref NumericalPropertyChangeEventStruct<int, KDMNumericalPropertyContext, KDMNumericalPropertyModifierReader> i_EventData)
+        {
+            throw new NotImplementedException();
         }
 
         public override void WriteXml(XmlWriter writer)
         {
+            base.WriteXml(writer);
             writer.WriteElementString("Value", m_Value.ToString());
-            writer.WriteElementString("Name", m_Name);
             writer.WriteElementString("Description", m_Description);
         }
     }
