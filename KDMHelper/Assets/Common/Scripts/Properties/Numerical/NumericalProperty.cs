@@ -86,16 +86,31 @@ namespace Common.Properties.Numerical
             return m_BaseValue;
         }
 
+
+        /// <summary>
+        /// Sets the property base value that modifiers are added to.
+        /// </summary>
+        /// <param name="i_Value">New property base value.</param>
+        public void SetBaseValue(TNumerical i_Value)
+        {
+            SetBaseValue(i_Value, GetDefaultContext());
+        }
+
         /// <summary>
         /// Sets the property base value that modifiers are added to.
         /// </summary>
         /// <param name="i_Value">New property base value.</param>
         /// <param name="i_Context">Contextual data about this change.</param>
-        public void SetBaseValue(TNumerical i_Value, TContext i_Context = default(TContext))
+        public void SetBaseValue(TNumerical i_Value, TContext i_Context)
         {
             m_BaseValue = i_Value;
             ENumericalPropertyChangeType changeTypeMask = ENumericalPropertyChangeType.BaseSet;
             UpdateInternal(changeTypeMask, i_Context);
+        }
+
+        public virtual TContext GetDefaultContext()
+        {
+            return default(TContext);
         }
 
         /// <summary>
@@ -122,14 +137,24 @@ namespace Common.Properties.Numerical
         public TModifierReader GetModifier(int i_Index)
         {
             Log.DebugAssert(i_Index < m_Modifiers.Count, "Index out of bounds.");
-            return m_Modifiers[i_Index].GetReader();
+            return m_Modifiers[i_Index].GetReader(GetDefaultContext());
         }
+
+        /// <summary>
+        /// Adds a modifier to the assigned modifier list.
+        /// </summary>
+        /// <param name="i_Modifier">The new modifier to add.</param>
+        public void AddModifier(INumericalPropertyModifier<TNumerical, TContext, TModifierReader> i_Modifier)
+        {
+            AddModifier(i_Modifier, GetDefaultContext());
+        }
+
         /// <summary>
         /// Adds a modifier to the assigned modifier list.
         /// </summary>
         /// <param name="i_Modifier">The new modifier to add.</param>
         /// <param name="i_Context">Contextual data about this change.</param>
-        public void AddModifier(INumericalPropertyModifier<TNumerical, TContext, TModifierReader> i_Modifier, TContext i_Context = default(TContext))
+        public void AddModifier(INumericalPropertyModifier<TNumerical, TContext, TModifierReader> i_Modifier, TContext i_Context)
         {
             Log.DebugAssert(i_Modifier != null, "Invalid null paremeter.");
             m_Modifiers.Add(i_Modifier);
@@ -137,13 +162,24 @@ namespace Common.Properties.Numerical
             ENumericalPropertyChangeType changeTypeMask = ENumericalPropertyChangeType.ModifierAdd;
             UpdateInternal(changeTypeMask, i_Context);
         }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="i_Modifier">The i_ modifier.</param>
+        /// <returns></returns>
+        public bool RemoveModifier(INumericalPropertyModifier<TNumerical, TContext, TModifierReader> i_Modifier)
+        {
+            return RemoveModifier(i_Modifier, GetDefaultContext());
+        }
         /// <summary>
         /// 
         /// </summary>
         /// <param name="i_Modifier">The i_ modifier.</param>
         /// <param name="i_Context">Contextual data about this change.</param>
         /// <returns></returns>
-        public bool RemoveModifier(INumericalPropertyModifier<TNumerical, TContext, TModifierReader> i_Modifier, TContext i_Context = default(TContext))
+        public bool RemoveModifier(INumericalPropertyModifier<TNumerical, TContext, TModifierReader> i_Modifier, TContext i_Context)
         {
             bool result = m_Modifiers.Remove(i_Modifier);
             if (result)
@@ -152,6 +188,15 @@ namespace Common.Properties.Numerical
                 UpdateInternal(changeTypeMask, i_Context);
             }
             return result;
+        }
+
+
+        /// <summary>
+        /// Force an update event on the property.
+        /// </summary>
+        public void Update()
+        {
+            Update(GetDefaultContext());
         }
 
         /// <summary>
@@ -164,12 +209,22 @@ namespace Common.Properties.Numerical
             UpdateInternal(changeTypeMask, i_Context);
         }
 
+
+        /// <summary>
+        /// Creates a change bundle for this property instance.
+        /// </summary>
+        /// <returns>New <see cref="ChangeBundle"/> instance for this property.</returns>
+        public ChangeBundle CreateChangeBundle()
+        {
+            return CreateChangeBundle(GetDefaultContext());
+        }
+
         /// <summary>
         /// Creates a change bundle for this property instance.
         /// </summary>
         /// <param name="i_Context">The context changes.</param>
         /// <returns>New <see cref="ChangeBundle"/> instance for this property.</returns>
-        public ChangeBundle CreateChangeBundle(TContext i_Context = default(TContext))
+        public ChangeBundle CreateChangeBundle(TContext i_Context)
         {
             return new ChangeBundle(this, i_Context);
         }

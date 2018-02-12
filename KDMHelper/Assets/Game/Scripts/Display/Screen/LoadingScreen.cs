@@ -21,7 +21,6 @@ namespace Game.Display.Screen
 
         private IEnumerator UpdateDisplayState(InfoDBSource infoSource)
         {
-            infoSource.Load();
             var state = infoSource.State;
             var displayElement = m_DisplayList.Add(state.ToString());
             displayElement.Label = infoSource.Name;
@@ -72,13 +71,10 @@ namespace Game.Display.Screen
             }
             m_DisplayController.TransitionFromFadeFastToFadeFast("Loading");
             Load();
-            TransitionToMenuWhenReady();
-        }
 
-        public void TransitionToMenuWhenReady()
-        {
             StartCoroutine(MenuTransitionWaiter());
         }
+        
         
         public void Load()
         {

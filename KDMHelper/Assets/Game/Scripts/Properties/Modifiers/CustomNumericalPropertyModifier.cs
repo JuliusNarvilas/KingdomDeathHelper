@@ -9,9 +9,11 @@ namespace Game.Properties.Modifiers
         protected string m_Description;
         protected int m_Value;
 
+        public CustomNumericalPropertyModifier() : base(string.Empty)
+        { }
+
         public CustomNumericalPropertyModifier(string i_Name) : base(i_Name)
-        {
-        }
+        { }
 
         public CustomNumericalPropertyModifier(string i_Name, int i_Value) : base(i_Name)
         {
@@ -35,24 +37,20 @@ namespace Game.Properties.Modifiers
         public override void ReadXml(XmlReader reader)
         {
             bool wasEmpty = reader.IsEmptyElement;
-            reader.Read();
+            base.ReadXml(reader);
 
             if (wasEmpty)
             {
                 return;
             }
-            base.ReadXml(reader);
-
-            reader.ReadStartElement("Value");
-            m_Value = reader.ReadContentAsInt();
-            reader.ReadEndElement();
             
+            m_Value = reader.ReadElementContentAsInt("Value", string.Empty);
             m_Description = reader.ReadElementString("Description");
         }
 
         public override void Update(ref NumericalPropertyChangeEventStruct<int, KDMNumericalPropertyContext, KDMNumericalPropertyModifierReader> i_EventData)
         {
-            throw new NotImplementedException();
+            i_EventData.NewModifier += m_Value;
         }
 
         public override void WriteXml(XmlWriter writer)

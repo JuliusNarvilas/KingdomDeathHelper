@@ -7,6 +7,7 @@ namespace Common.Threading
 {
     public enum EThreadedTaskState
     {
+        Awaiting,
         InProgress,
         Aborted,
         Succeeded,
@@ -105,8 +106,10 @@ namespace Common.Threading
                     //finding new tasks
                     if (m_ThreadPool.m_Tasks.Count > 0)
                     {
+                        Log.DebugLog("????????? LOCK m_ThreadPool.m_ThreadPoolTaskListChangeHandle Run");
                         lock (m_ThreadPool.m_ThreadPoolTaskListChangeHandle)
                         {
+                            Log.DebugLog("????????? LOCK ThreadTaskChangeHandle Run");
                             lock (ThreadTaskChangeHandle)
                             {
                                 int lastIndex = m_ThreadPool.m_Tasks.Count - 1;
@@ -116,13 +119,16 @@ namespace Common.Threading
                                     m_ThreadPool.m_Tasks.RemoveAt(lastIndex);
                                 }
                             }
+                            Log.DebugLog("????????? UNLOCK ThreadTaskChangeHandle Run");
                         }
+                        Log.DebugLog("????????? UNLOCK m_ThreadPool.m_ThreadPoolTaskListChangeHandle Run");
                     }
                     if (m_Task != null)
                     {
+                        m_Task.State = EThreadedTaskState.InProgress;
+                        m_Task.RunStartTimestamp = DateTime.UtcNow;
                         try
                         {
-                            m_Task.RunStartTimestamp = DateTime.UtcNow;
                             m_Task.RunFunc.Invoke();
                             m_Task.State = EThreadedTaskState.Succeeded;
                         }
@@ -133,10 +139,12 @@ namespace Common.Threading
                         }
                         finally
                         {
+                            Log.DebugLog("????????? LOCK ThreadTaskChangeHandle Finally");
                             lock (ThreadTaskChangeHandle)
                             {
                                 m_Task = null;
                             }
+                            Log.DebugLog("????????? UNLOCK ThreadTaskChangeHandle Finally");
                         }
                     }
                     else
@@ -197,11 +205,14 @@ namespace Common.Threading
         public ThreadPoolTaskHandle AddTask(Action i_Action, TimeSpan i_MaxRuntime, ThreadPriority i_Priority = ThreadPriority.Normal)
         {
             ThreadPoolJobTask task = new ThreadPoolJobTask(i_Action, i_MaxRuntime, i_Priority);
+
+            Log.DebugLog("????????? LOCK m_ThreadPoolTaskListChangeHandle AddTask");
             lock (m_ThreadPoolTaskListChangeHandle)
             {
                 m_Tasks.Add(task);
                 m_Tasks.InsertionSort(ThreadPoolJobTask.TerminationComparer.Descending);
             }
+            Log.DebugLog("????????? UNLOCK m_ThreadPoolTaskListChangeHandle AddTask");
             return new ThreadPoolTaskHandle(task);
         }
 
@@ -214,11 +225,14 @@ namespace Common.Threading
         {
             ThreadPoolJobTask newTask;
             var result = ThreadPoolTaskResult<TResult>.Create(i_Func, i_MaxRuntime, i_Priority, out newTask);
+
+            Log.DebugLog("????????? LOCK m_ThreadPoolTaskListChangeHandle AddTask2");
             lock (m_ThreadPoolTaskListChangeHandle)
             {
                 m_Tasks.Add(newTask);
                 m_Tasks.InsertionSort(ThreadPoolJobTask.TerminationComparer.Descending);
             }
+            Log.DebugLog("????????? UNLOCK m_ThreadPoolTaskListChangeHandle AddTask2");
             return result;
         }
 
@@ -267,6 +281,7 @@ namespace Common.Threading
         private int GetEstimatedThreadCount()
         {
             int lateTaskCount = 0;
+            Log.DebugLog("????????? LOCK m_ThreadPoolTaskListChangeHandle GetEstimatedThreadCount");
             lock (m_ThreadPoolTaskListChangeHandle)
             {
                 DateTime now = DateTime.UtcNow;
@@ -284,6 +299,8 @@ namespace Common.Threading
                     }
                 }
             }
+            Log.DebugLog("????????? UNLOCK m_ThreadPoolTaskListChangeHandle GetEstimatedThreadCount");
+
             lateTaskCount /= 3;
             return lateTaskCount <= 0 ? 1 : lateTaskCount;
         }
@@ -300,6 +317,7 @@ namespace Common.Threading
             for(int i = m_ActiveThreadList.Count - 1; i >= 0; --i)
             {
                 ThreadPoolJob threadJob = m_ActiveThreadList[i];
+                Log.DebugLog("????????? LOCK ThreadTaskChangeHandle MaintainActiveThreadList");
                 lock (threadJob.ThreadTaskChangeHandle)
                 {
                     if (threadJob.Task == null)
@@ -321,6 +339,7 @@ namespace Common.Threading
                         m_ActiveThreadList.RemoveAt(i);
                     }
                 }
+                Log.DebugLog("????????? UNLOCK ThreadTaskChangeHandle MaintainActiveThreadList");
             }
             return ExtraThreadCount;
         }

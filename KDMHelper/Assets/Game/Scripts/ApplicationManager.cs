@@ -17,7 +17,8 @@ namespace Game
         public enum EState
         {
             None,
-            Loading,
+            Initialising,
+            LoadingData,
             Ready
         }
 
@@ -28,7 +29,7 @@ namespace Game
         {
             if(s_State == EState.None)
             {
-                s_State = EState.Loading;
+                s_State = EState.Initialising;
                 SceneManager.LoadSceneAsync("GlobalAdditiveScene", LoadSceneMode.Additive);
             }
         }
@@ -45,19 +46,44 @@ namespace Game
         protected new void Awake()
         {
             base.Awake();
-            s_State = EState.Ready;
+
+
+            KDMNumericalProperty.RegisterModifierType(typeof(CustomNumericalPropertyModifier));
+            KDMNumericalProperty.RegisterModifierType(typeof(EnumReferencedNumericalPropertyModifier));
+            KDMNumericalProperty.RegisterModifierType(typeof(KDMNumericalPropertyModifier));
+
+
+
+            s_State = EState.LoadingData;
+            Load();
         }
 
         private void Start()
         {
+
+
+
+
+
+
+
+
+
+
+
+
+
+            ///////////////////////////////////////////////////////////////////////
+            //TESTING
+            //////////////////////////////////////////////////////////////////////
             XmlSerializerNamespaces s_Namespaces = new XmlSerializerNamespaces();
             s_Namespaces.Add(string.Empty, string.Empty);
             XmlSerializer s_Serializer = new XmlSerializer(typeof(KDMNumericalProperty));
 
             KDMNumericalProperty test = new KDMNumericalProperty("test", 2);
-            test.AddModifier(new CustomNumericalPropertyModifier(3));
-            test.AddModifier(new CustomNumericalPropertyModifier(-1));
-            test.AddModifier(new CustomNumericalPropertyModifier(2));
+            test.AddModifier(new CustomNumericalPropertyModifier("test", 3));
+            test.AddModifier(new CustomNumericalPropertyModifier("test", -1));
+            test.AddModifier(new CustomNumericalPropertyModifier("test", 2));
 
             List<KDMNumericalProperty> testList = new List<KDMNumericalProperty>();
             testList.Add(test);
@@ -79,7 +105,6 @@ namespace Game
             Debug.Log(myStr);
             
             mem.Position = 0;
-
             
             var reader = XmlReader.Create(mem);
             reader.MoveToContent();
@@ -114,6 +139,23 @@ namespace Game
         private void OnApplicationQuit()
         {
             //TODO: autosave
+        }
+
+
+        private void Load()
+        {
+            if (InfoDB != null && InfoDB.Sources != null)
+            {
+                InfoDB.Reset();
+                int count = InfoDB.Sources.Count;
+                if (count > 0 && InfoDB.Sources[0].State == InfoDBSource.EState.Initial)
+                {
+                    for (int i = 0; i < count; ++i)
+                    {
+                        InfoDB.Sources[i].Load();
+                    }
+                }
+            }
         }
     }
 }

@@ -12,7 +12,7 @@ namespace Common.Threading
         /// <summary>
         /// The state of a threaded task.
         /// </summary>
-        public EThreadedTaskState State = EThreadedTaskState.InProgress;
+        public EThreadedTaskState State = EThreadedTaskState.Awaiting;
         /// <summary>
         /// The exception thrown during task execution.
         /// </summary>

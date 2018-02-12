@@ -23,6 +23,14 @@ namespace Game.Model
 
     public class Settlement : IXmlSerializable
     {
+        private static Settlement s_Instance;
+
+        public static Settlement GetCurrent()
+        {
+            return s_Instance;
+        }
+
+
         public Guid Id;
 
 
@@ -30,7 +38,7 @@ namespace Game.Model
 
         public EnumProperty<Campaign> CampaignType;
 
-        public MaxSurvivalProperty MaxSurvival;
+        public SurvivorNumericalProperty MaxSurvival;
 
         public SettlementTimeline Timeline;
 

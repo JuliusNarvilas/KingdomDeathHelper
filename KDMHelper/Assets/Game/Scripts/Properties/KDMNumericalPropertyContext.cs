@@ -1,5 +1,7 @@
-﻿using Game.Model;
+﻿using Common.Properties.Numerical;
+using Game.Model;
 using Game.Model.Character;
+using Game.Properties.Modifiers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,8 +11,8 @@ namespace Game.Properties
 {
     public struct KDMNumericalPropertyContext
     {
-        public KDMNumericalProperty Property;
+        public NumericalProperty<int, KDMNumericalPropertyContext, KDMNumericalPropertyModifierReader> Property;
         public Survivor Survivor;
-        public Campaign Campaign;
+        public Settlement Settlement;
     }
 }

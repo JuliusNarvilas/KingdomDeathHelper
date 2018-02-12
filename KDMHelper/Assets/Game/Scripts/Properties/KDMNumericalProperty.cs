@@ -102,11 +102,23 @@ namespace Game.Properties
     public class KDMNumericalProperty : NumericalProperty<int, KDMNumericalPropertyContext, KDMNumericalPropertyModifierReader>, IXmlSerializable
     {
         private static XmlSerializerNamespaces s_Namespaces;
+        private static List<Type> s_RegisteredModifierTypes = new List<Type>();
 
         static KDMNumericalProperty()
         {
             s_Namespaces = new XmlSerializerNamespaces();
             s_Namespaces.Add(string.Empty, string.Empty);
+        }
+
+        public static void RegisterModifierType(Type i_Type)
+        {
+            s_RegisteredModifierTypes.Add(i_Type);
+        }
+
+
+        public KDMNumericalProperty() : base(new NumericalPropertyIntData(0))
+        {
+            m_Name = string.Empty;
         }
 
         public KDMNumericalProperty(string i_Name) : base(new NumericalPropertyIntData(0))
@@ -136,7 +148,7 @@ namespace Game.Properties
             {
                 Property = this,
                 Survivor = null,
-                Campaign = Model.Campaign.GetCurrent()
+                Settlement = Model.Settlement.GetCurrent()
             };
         }
 
@@ -164,20 +176,30 @@ namespace Game.Properties
             {
                 while (reader.NodeType != XmlNodeType.EndElement)
                 {
-                    Type modifierType = Type.GetType(reader.Name);
-                    if(modifierType != null)
+                    Type modifierType = null;
+                    string typeName = reader.Name;
+                    int count = s_RegisteredModifierTypes.Count;
+                    for(int i = 0; i < count; i++)
+                    {
+                        if(s_RegisteredModifierTypes[i].Name == typeName)
+                        {
+                            modifierType = s_RegisteredModifierTypes[i];
+                            break;
+                        }
+                    }
+
+                    if (modifierType != null)
                     {
                         XmlSerializer modSerializer = new XmlSerializer(modifierType);
-                        if(typeof(KDMNumericalPropertyModifier).IsAssignableFrom(modifierType))
+                        var newMod = modSerializer.Deserialize(reader) as INumericalPropertyModifier<int, KDMNumericalPropertyContext, KDMNumericalPropertyModifierReader>;
+                        if (newMod != null)
                         {
-                            var newMod = modSerializer.Deserialize(reader) as KDMNumericalPropertyModifier;
                             m_Modifiers.Add(newMod);
                         }
-                        else if(typeof(EnumReferencedNumericalPropertyModifier).IsAssignableFrom(modifierType))
-                        {
-                            var newMod = modSerializer.Deserialize(reader) as KDMNumericalPropertyModifier;
-                            m_Modifiers.Add(newMod);
-                        }
+                    }
+                    else
+                    {
+                        reader.Skip();
                     }
                     reader.MoveToContent();
                 }

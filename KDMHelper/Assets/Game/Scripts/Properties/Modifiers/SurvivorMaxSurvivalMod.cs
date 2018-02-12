@@ -4,11 +4,11 @@ using Common.Properties.Numerical;
 
 namespace Game.Properties.Modifiers
 {
-    public class SurvivorFrenzyMod : KDMNumericalPropertyModifier
+    public class SurvivorMaxSurvivalMod : KDMNumericalPropertyModifier
     {
-        protected string m_Description = "A brain trauma result. A survivor who suffers this is Frenzied until the end of the Showdown Phase. Gain +1 strength token, +1 speed token, and 1d5 insanity. Ignore the slow special rule on melee weapons. A frenzied survivor may not spend survival or use fighting arts, Weapon specialization, or weapon mastery. A survivor may be Frenzied multiple times.";
+        protected string m_Description = "Survival cannot exceed the settlement Max Survival.";
 
-        public SurvivorFrenzyMod() : base("Frenzy")
+        public SurvivorMaxSurvivalMod() : base("Survival Limit")
         {
         }
 
@@ -16,7 +16,7 @@ namespace Game.Properties.Modifiers
         {
             return new KDMNumericalPropertyModifierReader()
             {
-                Value = i_Context.Survivor.Frenzy.GetValue(),
+                Value = 0,
                 Description = m_Description,
                 Name = m_Name
             };
@@ -24,7 +24,12 @@ namespace Game.Properties.Modifiers
 
         public override void Update(ref NumericalPropertyChangeEventStruct<int, KDMNumericalPropertyContext, KDMNumericalPropertyModifierReader> i_EventData)
         {
-            i_EventData.NewModifier += i_EventData.Context.Survivor.Frenzy.GetValue();
+            int currentValue = i_EventData.NumericalProperty.GetValue() + i_EventData.NewModifier;
+            int maxSurvival = i_EventData.Context.Settlement.MaxSurvival.GetValue();
+            if (currentValue > maxSurvival)
+            {
+                i_EventData.NumericalProperty.SetBaseValue(maxSurvival - i_EventData.NewModifier);
+            }
         }
 
         public override bool SerializeForProperty(KDMNumericalProperty i_Property)

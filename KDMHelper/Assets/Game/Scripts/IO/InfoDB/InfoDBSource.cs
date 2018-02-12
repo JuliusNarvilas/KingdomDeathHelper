@@ -2,6 +2,7 @@
 using Common.Helpers;
 using Common.Threading;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -26,8 +27,6 @@ namespace Game.IO.InfoDB
         [SerializeField]
         private TextAsset m_DefaultContentAsset;
         private string m_FinalReadContent;
-        private string m_ExternalFilePath;
-        private StringBuilder m_WriteContent = new StringBuilder();
 
         [NonSerialized]
         private EState m_State = EState.Initial;
@@ -51,11 +50,14 @@ namespace Game.IO.InfoDB
         public EThreadedTaskState LoadTaskState { get { return m_LoadTaskHandle == null ? EThreadedTaskState.Succeeded : m_LoadTaskHandle.State; } }
         public EThreadedTaskState SaveTaskState { get { return m_SaveTaskHandle == null ? EThreadedTaskState.Succeeded : m_SaveTaskHandle.State; } }
 
+
+        private Coroutine m_SaveAwaiter = null;
+        private Coroutine m_LoadAwaiter = null;
+
         public void Reset()
         {
             m_Dirty = false;
             m_FinalReadContent = null;
-            m_ExternalFilePath = null;
             m_State = EState.Initial;
             m_ColumnNames = null;
             m_Values = null;
@@ -148,10 +150,12 @@ namespace Game.IO.InfoDB
                     return;
                 }
 
-                if (File.Exists(m_ExternalFilePath))
+                string externalFilePath = string.Format("{0}/{1}.csv", Application.persistentDataPath, m_DefaultContentAsset.name);
+
+                if (File.Exists(externalFilePath))
                 {
 #if !UNITY_EDITOR
-                externalAssetText = File.ReadAllText(m_ExternalFilePath);
+                externalAssetText = File.ReadAllText(externalFilePath);
                 if(!TryGetVersionNumber(externalAssetText, out externalVersionNumber))
                 {
                     m_Error = "Asset Data Invalid (Parse Error)!";
@@ -169,14 +173,14 @@ namespace Game.IO.InfoDB
                 else
                 {
 #if !UNITY_EDITOR
-                int lastSeperator = m_ExternalFilePath.LastIndexOf('/');
-                var directory = m_ExternalFilePath.Substring(0, lastSeperator);
+                int lastSeperator = externalFilePath.LastIndexOf('/');
+                var directory = externalFilePath.Substring(0, lastSeperator);
                 DirectoryInfo target = new DirectoryInfo(directory);
                 if(!target.Exists)
                 {
                     target.Create();
                 }
-                File.WriteAllText(m_ExternalFilePath, m_FinalReadContent);
+                m_FinalReadContent = File.ReadAllText(externalFilePath);
 #endif
                 }
 
@@ -193,7 +197,7 @@ namespace Game.IO.InfoDB
                 }
                 */
 
-                Log.DebugLog("Finished loading {0}.", m_ExternalFilePath);
+                Log.DebugLog("Finished loading {0}.", externalFilePath);
 
                 m_FinalReadContent = null;
                 m_Error = null;
@@ -205,74 +209,120 @@ namespace Game.IO.InfoDB
         {
             lock(m_ReadWriteLock)
             {
-                m_WriteContent.Length = 0;
-                m_WriteContent.Append(m_VersionNumber);
-                m_WriteContent.Append("\n");
+                StringBuilder writeContent = new StringBuilder();
+                writeContent.Length = 0;
+                writeContent.Append(m_VersionNumber);
+                writeContent.Append("\n");
 
                 int lastColumnIndex = m_ColumnNames.Length - 1;
                 for (int i = 0; i < lastColumnIndex; ++i)
                 {
-                    m_WriteContent.Append(StringHelper.StringToCSVCell(m_ColumnNames[i]));
-                    m_WriteContent.Append(", ");
+                    writeContent.Append(StringHelper.StringToCSVCell(m_ColumnNames[i]));
+                    writeContent.Append(", ");
                 }
-                m_WriteContent.Append(StringHelper.StringToCSVCell(m_ColumnNames[lastColumnIndex]));
-                m_WriteContent.Append('\n');
+                writeContent.Append(StringHelper.StringToCSVCell(m_ColumnNames[lastColumnIndex]));
+                writeContent.Append('\n');
 
                 int valueCount = m_Values.Count;
                 for (int i = 0; i < valueCount; ++i)
                 {
                     for (int j = 0; i < lastColumnIndex; ++j)
                     {
-                        m_WriteContent.Append(StringHelper.StringToCSVCell(m_Values[i][j]));
-                        m_WriteContent.Append(", ");
+                        writeContent.Append(StringHelper.StringToCSVCell(m_Values[i][j]));
+                        writeContent.Append(", ");
                     }
-                    m_WriteContent.Append(StringHelper.StringToCSVCell(m_Values[i][lastColumnIndex]));
-                    m_WriteContent.Append('\n');
+                    writeContent.Append(StringHelper.StringToCSVCell(m_Values[i][lastColumnIndex]));
+                    writeContent.Append('\n');
                 }
 
+                string externalFilePath = string.Format("{0}/{1}.csv", Application.persistentDataPath, m_DefaultContentAsset.name);
+
+                //only actually save in non-editor mode
 #if !UNITY_EDITOR
-                int lastSeperator = m_ExternalFilePath.LastIndexOf('/');
-                var directory = m_ExternalFilePath.Substring(0, lastSeperator);
+                int lastSeperator = externalFilePath.LastIndexOf('/');
+                var directory = externalFilePath.Substring(0, lastSeperator);
                 DirectoryInfo target = new DirectoryInfo(directory);
                 if(!target.Exists)
                 {
                     target.Create();
                 }
-                File.WriteAllText(m_ExternalFilePath, m_WriteContent.ToString());
+                File.WriteAllText(externalFilePath, m_WriteContent.ToString());
 #endif
             }
         }
         
         public void Load()
         {
-            if (State == EState.Initial)
+            if (m_LoadAwaiter == null)
             {
-                if(m_DefaultContentAsset == null)
-                {
-                    m_State = EState.Errored;
-                    m_Error = "Asset Not Found";
-                    return;
-                }
-                
-                m_State = EState.Loading;
-                if (m_ExternalFilePath == null)
-                {
-                    m_ExternalFilePath = string.Format("{0}/{1}.csv", Application.persistentDataPath, m_DefaultContentAsset.name);
-                }
-                m_FinalReadContent = m_DefaultContentAsset.text;
-                m_LoadTaskHandle = ThreadPool.Instance.AddTask(LoadingFunc, TimeSpan.FromMinutes(5), System.Threading.ThreadPriority.Highest);
+                m_LoadAwaiter = ApplicationManager.Instance.StartCoroutine(LoadAwaiter());
             }
         }
 
+        public IEnumerator LoadAwaiter()
+        {
+
+            if (State == EState.Initial)
+            {
+                if (m_DefaultContentAsset == null)
+                {
+                    m_State = EState.Errored;
+                    m_Error = "Asset Not Found";
+                    m_LoadAwaiter = null;
+                    yield break;
+                }
+                
+                //loading already about to start
+                if (m_LoadTaskHandle != null && m_LoadTaskHandle.State <= EThreadedTaskState.InProgress)
+                {
+                    m_LoadAwaiter = null;
+                    yield break;
+                }
+
+                //wait for saving to finish
+                while (m_SaveAwaiter != null || (m_SaveTaskHandle != null && m_SaveTaskHandle.State <= EThreadedTaskState.InProgress))
+                {
+                    yield return null;
+                }
+
+                m_FinalReadContent = m_DefaultContentAsset.text;
+                m_LoadTaskHandle = ThreadPool.Instance.AddTask(LoadingFunc, TimeSpan.FromMinutes(5), System.Threading.ThreadPriority.Highest);
+            }
+            m_LoadAwaiter = null;
+        }
+
+
         public void Save()
         {
-            if (m_ExternalFilePath == null)
+            if(m_SaveAwaiter == null)
             {
-                m_ExternalFilePath = string.Format("{0}/{1}.csv", Application.persistentDataPath, m_DefaultContentAsset.name);
+                m_SaveAwaiter = ApplicationManager.Instance.StartCoroutine(SaveAwaiter());
             }
-                
-            m_FinalReadContent = m_DefaultContentAsset.text;
+        }
+
+        public IEnumerator SaveAwaiter()
+        {
+            //already about to save
+            if (m_SaveTaskHandle != null && m_SaveTaskHandle.State == EThreadedTaskState.Awaiting)
+            {
+                m_SaveAwaiter = null;
+                yield break;
+            }
+            //loading in progress - saving is invalid
+            if (m_LoadAwaiter != null || (m_LoadTaskHandle != null && m_LoadTaskHandle.State <= EThreadedTaskState.InProgress))
+            {
+                m_SaveAwaiter = null;
+                yield break;
+            }
+
+            //wait for old save to finish
+            while (m_SaveTaskHandle != null && m_SaveTaskHandle.State <= EThreadedTaskState.InProgress)
+            {
+                yield return null;
+            }
+
             m_SaveTaskHandle = ThreadPool.Instance.AddTask(SavingFunc, TimeSpan.FromMinutes(5), System.Threading.ThreadPriority.Highest);
+            m_SaveAwaiter = null;
         }
 
         public void SaveIfDirty()

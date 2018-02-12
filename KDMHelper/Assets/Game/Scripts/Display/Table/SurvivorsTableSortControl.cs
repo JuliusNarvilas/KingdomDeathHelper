@@ -12,29 +12,13 @@ using UnityEngine.UI;
 
 namespace Game.Display.Table
 {
-    public enum ESurvivorsSortInfoType
-    {
-        Name,
-        Strength,
-        Evasion,
-        Luck,
-        Accuracy,
-        Speed,
-        HuntXp,
-        Gender,
-        WeaponType,
-        WeaponXp,
-        Courage,
-        Understanding
-    }
-
     public class SurvivorsTableSortControl : MonoBehaviour, ITableSortControl<Survivor>
     {
 
         [Serializable]
         private struct SurvivorsSortInfoSettings
         {
-            public ESurvivorsSortInfoType InfoType;
+            public ESurvivorsInfoType InfoType;
             public TableSortInfo Info;
         }
 
@@ -43,7 +27,7 @@ namespace Game.Display.Table
         public static int InfoTypeCount { get { return s_InfoTypeCount; } }
         static SurvivorsTableSortControl()
         {
-            s_InfoTypeCount = Enum.GetNames(typeof(ESurvivorsSortInfoType)).Length;
+            s_InfoTypeCount = Enum.GetNames(typeof(ESurvivorsInfoType)).Length;
         }
 
 
@@ -103,40 +87,40 @@ namespace Game.Display.Table
         {
             switch(i_Settings.InfoType)
             {
-                case ESurvivorsSortInfoType.Name:
+                case ESurvivorsInfoType.Name:
                     i_Settings.Info.Init(this, SortName, i_Settings.InfoType);
                     break;
-                case ESurvivorsSortInfoType.Strength:
+                case ESurvivorsInfoType.Strength:
                     i_Settings.Info.Init(this, SortStrength, i_Settings.InfoType);
                     break;
-                case ESurvivorsSortInfoType.Evasion:
+                case ESurvivorsInfoType.Evasion:
                     i_Settings.Info.Init(this, SortEvasion, i_Settings.InfoType);
                     break;
-                case ESurvivorsSortInfoType.Luck:
+                case ESurvivorsInfoType.Luck:
                     i_Settings.Info.Init(this, SortLuck, i_Settings.InfoType);
                     break;
-                case ESurvivorsSortInfoType.Accuracy:
+                case ESurvivorsInfoType.Accuracy:
                     i_Settings.Info.Init(this, SortAccuracy, i_Settings.InfoType);
                     break;
-                case ESurvivorsSortInfoType.Speed:
+                case ESurvivorsInfoType.Speed:
                     i_Settings.Info.Init(this, SortSpeed, i_Settings.InfoType);
                     break;
-                case ESurvivorsSortInfoType.HuntXp:
+                case ESurvivorsInfoType.HuntXp:
                     i_Settings.Info.Init(this, SortHuntXp, i_Settings.InfoType);
                     break;
-                case ESurvivorsSortInfoType.Gender:
+                case ESurvivorsInfoType.Gender:
                     i_Settings.Info.Init(this, SortGender, i_Settings.InfoType);
                     break;
-                case ESurvivorsSortInfoType.WeaponType:
+                case ESurvivorsInfoType.WeaponType:
                     i_Settings.Info.Init(this, SortWeaponType, i_Settings.InfoType);
                     break;
-                case ESurvivorsSortInfoType.WeaponXp:
+                case ESurvivorsInfoType.WeaponXp:
                     i_Settings.Info.Init(this, SortWeaponXp, i_Settings.InfoType);
                     break;
-                case ESurvivorsSortInfoType.Courage:
+                case ESurvivorsInfoType.Courage:
                     i_Settings.Info.Init(this, SortCourage, i_Settings.InfoType);
                     break;
-                case ESurvivorsSortInfoType.Understanding:
+                case ESurvivorsInfoType.Understanding:
                     i_Settings.Info.Init(this, SortUnderstanding, i_Settings.InfoType);
                     break;
                 default:

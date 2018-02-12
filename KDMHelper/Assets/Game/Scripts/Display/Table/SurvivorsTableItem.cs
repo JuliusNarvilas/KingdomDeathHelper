@@ -1,5 +1,6 @@
 ﻿using Common;
 using Common.Display.Table;
+using Game.Model.Character;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -16,7 +17,7 @@ namespace Game.Display.Table
         [Serializable]
         private struct SurvivorsTableItemElementConfig
         {
-            public ESurvivorsSortInfoType InfoType;
+            public ESurvivorsInfoType InfoType;
             public TableItemElement Element;
         }
 
@@ -55,6 +56,16 @@ namespace Game.Display.Table
                 m_DisplayElementsCoroutine = null;
             }
             m_DisplayElementsCoroutine = StartCoroutine(DisplayElementsWhenReady(visibleSortInfo));
+        }
+
+        public void Set(Survivor i_Survivor)
+        {
+            int count = m_ItemElements.Count;
+            for(int i = 0; i < count; ++i)
+            {
+                string displayValue = i_Survivor.GetValue(m_ItemElements[i].InfoType);
+                m_ItemElements[i].Element.SetValue(displayValue);
+            }
         }
 
         private IEnumerator DisplayElementsWhenReady(List<TableSortInfo> visibleSortInfo)

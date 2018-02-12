@@ -25,7 +25,7 @@ namespace Game.Properties.Modifiers
         protected string m_Name;
 
         public string GetName() { return m_Name; }
-
+        
         public KDMNumericalPropertyModifier(string i_Name, int i_Order = 1)
         {
             m_Order = i_Order;
@@ -60,10 +60,7 @@ namespace Game.Properties.Modifiers
                 return;
             }
 
-            reader.ReadStartElement("Order");
-            m_Order = reader.ReadContentAsInt();
-            reader.ReadEndElement();
-
+            m_Order = reader.ReadElementContentAsInt("Order", string.Empty);
             m_Name = reader.ReadElementString("Name");
         }
         public virtual void WriteXml(XmlWriter writer)
