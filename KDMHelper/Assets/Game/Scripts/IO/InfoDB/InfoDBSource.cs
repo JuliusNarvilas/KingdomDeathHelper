@@ -26,6 +26,7 @@ namespace Game.IO.InfoDB
         public string Name;
         [SerializeField]
         private TextAsset m_DefaultContentAsset;
+        private string m_DefaultContentAssetName;
         private string m_FinalReadContent;
 
         [NonSerialized]
@@ -150,7 +151,7 @@ namespace Game.IO.InfoDB
                     return;
                 }
 
-                string externalFilePath = string.Format("{0}/{1}.csv", Application.persistentDataPath, m_DefaultContentAsset.name);
+                string externalFilePath = string.Format("{0}/{1}.csv", ApplicationManager.Instance.PersistentDataPath, m_DefaultContentAssetName);
 
                 if (File.Exists(externalFilePath))
                 {
@@ -253,6 +254,7 @@ namespace Game.IO.InfoDB
         
         public void Load()
         {
+            m_DefaultContentAssetName = m_DefaultContentAsset.name;
             if (m_LoadAwaiter == null)
             {
                 m_LoadAwaiter = ApplicationManager.Instance.StartCoroutine(LoadAwaiter());

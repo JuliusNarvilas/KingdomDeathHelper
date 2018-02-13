@@ -316,6 +316,8 @@ namespace Common.Display.Transition
                         m_NextTransition.Target = newTarget;
                         m_NextTransition.TransitionOutType = i_TransitionOutType;
                         m_NextTransition.TransitionInType = i_TransitionOutType;
+                        m_NextTransition.TransitionInSpeed = i_TransitionInSpeed;
+                        m_NextTransition.TransitionOutSpeed = i_TransitionOutSpeed;
                     }
                     break;
                 case EState.Ready:

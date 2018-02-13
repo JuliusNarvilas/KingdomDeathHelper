@@ -65,25 +65,24 @@ namespace Game.Display.Screen
 
         IEnumerator Start()
         {
-            while(ApplicationManager.State != ApplicationManager.EState.Ready)
+            while(ApplicationManager.State < ApplicationManager.EState.LoadingData)
             {
                 yield return null;
             }
             m_DisplayController.TransitionFromFadeFastToFadeFast("Loading");
-            Load();
+            TrackLoading();
 
             StartCoroutine(MenuTransitionWaiter());
         }
         
         
-        public void Load()
+        public void TrackLoading()
         {
             if (ApplicationManager.State == ApplicationManager.EState.Ready)
             {
                 if (ApplicationManager.Instance.InfoDB != null && ApplicationManager.Instance.InfoDB.Sources != null)
                 {
                     var infoDB = ApplicationManager.Instance.InfoDB;
-                    infoDB.Reset();
                     m_LoadingFinished = 0;
                     int displayItemCount = m_DisplayElements.Count;
                     for (int i = 0; i < displayItemCount; ++i)
@@ -92,7 +91,7 @@ namespace Game.Display.Screen
                     }
                     m_DisplayElements.Clear();
                     int count = infoDB.Sources.Count;
-                    if (count > 0 && infoDB.Sources[0].State == InfoDBSource.EState.Initial)
+                    if (count > 0)
                     {
                         for (int i = 0; i < count; ++i)
                         {

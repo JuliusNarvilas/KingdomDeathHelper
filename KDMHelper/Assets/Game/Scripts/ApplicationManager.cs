@@ -3,6 +3,7 @@ using Game.IO.InfoDB;
 using Game.Properties;
 using Game.Properties.Modifiers;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
@@ -38,6 +39,12 @@ namespace Game
         private InfoDBController m_InfoDB;
         public InfoDBController InfoDB { get { return m_InfoDB; } }
 
+        private string m_PersistentDataPath;
+        public string PersistentDataPath
+        {
+            get { return m_PersistentDataPath; }
+        }
+
         public event Action OnScreenSizeChange;
 
         private float m_LastScreenWidth = 0f;
@@ -47,6 +54,7 @@ namespace Game
         {
             base.Awake();
 
+            m_PersistentDataPath = Application.persistentDataPath;
 
             KDMNumericalProperty.RegisterModifierType(typeof(CustomNumericalPropertyModifier));
             KDMNumericalProperty.RegisterModifierType(typeof(EnumReferencedNumericalPropertyModifier));
@@ -55,7 +63,7 @@ namespace Game
 
 
             s_State = EState.LoadingData;
-            Load();
+            StartCoroutine(Load());
         }
 
         private void Start()
@@ -142,20 +150,38 @@ namespace Game
         }
 
 
-        private void Load()
+        private IEnumerator Load()
         {
-            if (InfoDB != null && InfoDB.Sources != null)
+            if (InfoDB == null || InfoDB.Sources == null)
             {
-                InfoDB.Reset();
-                int count = InfoDB.Sources.Count;
-                if (count > 0 && InfoDB.Sources[0].State == InfoDBSource.EState.Initial)
+                yield break;
+            }
+
+            InfoDB.Reset();
+            int count = InfoDB.Sources.Count;
+            for (int i = 0; i < count; ++i)
+            {
+                if(InfoDB.Sources[i].State == InfoDBSource.EState.Initial)
                 {
-                    for (int i = 0; i < count; ++i)
+                    InfoDB.Sources[i].Load();
+                }
+            }
+
+            bool processing = true;
+            while (processing)
+            {
+                processing = false;
+                for (int i = 0; i < count; ++i)
+                {
+                    if (InfoDB.Sources[i].State <= InfoDBSource.EState.Parsing)
                     {
-                        InfoDB.Sources[i].Load();
+                        processing = true;
+                        break;
                     }
                 }
             }
+
+            s_State = EState.Ready;
         }
     }
 }
