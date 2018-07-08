@@ -8,7 +8,7 @@ namespace Game.Model.Gear
 {
     public class SettlementGearRecord
     {
-        public EnumProperty<string> GearType;
+        public EnumProperty GearType;
         public int Count;
     }
 }

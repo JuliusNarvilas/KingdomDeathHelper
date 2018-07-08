@@ -12,7 +12,7 @@ namespace Game.Model.Resources
         {
             protected override string GetKeyForItem(SettlementResourcesRecord item)
             {
-                return item.ResourceType.GetValue();
+                return item.ResourceType.GetValue().ToString();
             }
 
             public SettlementResourcesRecord[] ToArray()

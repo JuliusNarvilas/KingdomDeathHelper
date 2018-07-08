@@ -3,6 +3,13 @@ using System;
 
 namespace Common.Properties
 {
+    public delegate void PropertyChangeHandler<TValueType, TPropertyType>(TValueType i_OldValue, TValueType i_NewValue, TPropertyType i_Property) where TPropertyType : Property<TValueType>;
+
+    public interface IObservablePropertySimpleSubscription
+    {
+        event Action<object> SimpleChangeSubscription;
+    }
+
     /// <summary>
     /// Simplest Property class for holding a value of any type.
     /// </summary>
@@ -41,6 +48,11 @@ namespace Common.Properties
         public T GetValue()
         {
             return m_Value;
+        }
+
+        public override string ToString()
+        {
+            return m_Value.ToString();
         }
     }
 }

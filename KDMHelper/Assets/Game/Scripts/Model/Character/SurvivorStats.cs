@@ -9,6 +9,7 @@ namespace Game.Model.Character
 {
     public class SurvivorStats
     {
+        /*
         private Survivor m_Survivor;
 
         public SurvivorNumericalProperty Accuracy;
@@ -47,5 +48,6 @@ namespace Game.Model.Character
             Log.ProductionLogError(string.Format("Can not find Survivor stat: {0}.", i_Name));
             return null;
         }
+        */
     }
 }

@@ -53,39 +53,33 @@ namespace Game.Model.Character
 
         public int HuntXp;
         public int WeaponXp;
-        public EnumProperty<WeaponProficiencyInfo> WeaponType;
+        public EnumProperty WeaponType;
         
         public bool CanSpendSurvival;
-        public SurvivorNumericalProperty Survival;
+        //public SurvivorNumericalProperty Survival;
 
         public int Courage;
-        public List<EnumProperty<string>> CourageAbility = new List<EnumProperty<string>>();
+        public List<EnumProperty> CourageAbility = new List<EnumProperty>();
         public int Understanding;
-        public List<EnumProperty<string>> UnderstandingAbility = new List<EnumProperty<string>>();
+        public List<EnumProperty> UnderstandingAbility = new List<EnumProperty>();
 
-        public List<EnumProperty<string>> Disorders = new List<EnumProperty<string>>();
-        public List<EnumProperty<string>> FightingArts = new List<EnumProperty<string>>();
-        public List<EnumProperty<string>> AbilitiesAndImpairments = new List<EnumProperty<string>>();
+        public List<EnumProperty> Disorders = new List<EnumProperty>();
+        public List<EnumProperty> FightingArts = new List<EnumProperty>();
+        public List<EnumProperty> AbilitiesAndImpairments = new List<EnumProperty>();
 
         public SurvivorStats Stats;
         public SurvivorArmor Armor;
 
-        public SurvivorNumericalProperty Frenzy;
-        public SurvivorNumericalProperty Bleeding;
+        //public SurvivorNumericalProperty Frenzy;
+        //public SurvivorNumericalProperty Bleeding;
 
         public List<string> Notes;
 
         
-        public Survivor()
-        {
-            SurvivorStats Stats = new SurvivorStats(this);
-            SurvivorArmor Armor = new SurvivorArmor();
-            Stats.Streangth.AddModifier(new SurvivorFrenzyMod());
-            Stats.Speed.AddModifier(new SurvivorFrenzyMod());
-        }
 
         public string GetValue(ESurvivorsInfoType i_InfoType)
         {
+            /*
             switch (i_InfoType) {
                 case ESurvivorsInfoType.Accuracy:
                     return Stats.Accuracy.GetValue().ToString();
@@ -112,7 +106,7 @@ namespace Game.Model.Character
                 case ESurvivorsInfoType.WeaponXp:
                     return WeaponXp.ToString();
             }
-
+            */
             return string.Empty;
         }
     }

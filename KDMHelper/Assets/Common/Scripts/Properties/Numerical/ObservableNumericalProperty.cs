@@ -1,4 +1,5 @@
-﻿using Common.Properties.Numerical.Data;
+﻿using System;
+using Common.Properties.Numerical.Data;
 
 namespace Common.Properties.Numerical
 {
@@ -15,9 +16,10 @@ namespace Common.Properties.Numerical
     /// <typeparam name="TNumerical">The type of the numerical data.</typeparam>
     /// <typeparam name="TContext">The type of the context.</typeparam>
     /// <typeparam name="TModifierReader">The type of the modifier reader.</typeparam>
-    public class ObservableNumericalProperty<TNumerical, TContext, TModifierReader> : NumericalProperty<TNumerical, TContext, TModifierReader> where TModifierReader : INumericalPropertyModifierReader<TNumerical>
+    public class ObservableNumericalProperty<TNumerical, TContext, TModifierReader> : NumericalProperty<TNumerical, TContext, TModifierReader>, IObservablePropertySimpleSubscription where TModifierReader : INumericalPropertyModifierReader<TNumerical>
     {
         public event NumericalPropertyEventHandler<TNumerical, TContext, TModifierReader> ChangeSubscription;
+        public event Action<object> SimpleChangeSubscription;
 
         public ObservableNumericalProperty(INumericalPropertyData<TNumerical> i_Value) : base(i_Value)
         { }
@@ -29,7 +31,7 @@ namespace Common.Properties.Numerical
         /// <param name="i_Context">The change context.</param>
         protected override void UpdateInternal(ENumericalPropertyChangeType i_ChangeTypeMask, TContext i_Context)
         {
-            if ((m_Modifiers.Count > 0) || (ChangeSubscription != null))
+            if ((m_Modifiers.Count > 0) || (ChangeSubscription != null) || (SimpleChangeSubscription != null))
             {
                 if (!m_Updating)
                 {
@@ -57,6 +59,10 @@ namespace Common.Properties.Numerical
                 if (ChangeSubscription != null)
                 {
                     ChangeSubscription(ref eventData);
+                }
+                if(SimpleChangeSubscription != null)
+                {
+                    SimpleChangeSubscription(this);
                 }
             }
             else

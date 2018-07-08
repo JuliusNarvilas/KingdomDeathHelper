@@ -10,12 +10,12 @@ namespace Game.Properties.Modifiers
 {
     public class EnumReferencedNumericalPropertyModifier : KDMNumericalPropertyModifier
     {
-        protected EnumProperty<string> m_EnumProperty;
+        protected EnumProperty m_EnumProperty;
         protected int m_Value;
 
-        public string GetDescription() { return m_EnumProperty.Content; }
+        public string GetDescription() { return m_EnumProperty.Content.ToString(); }
 
-        public EnumReferencedNumericalPropertyModifier(EnumProperty<string> i_ReferencedProperty, int i_ModifierValue) : base(i_ReferencedProperty.GetValue())
+        public EnumReferencedNumericalPropertyModifier(EnumProperty i_ReferencedProperty, int i_ModifierValue) : base(i_ReferencedProperty.GetValue().ToString())
         {
             m_EnumProperty = i_ReferencedProperty;
         }
@@ -26,7 +26,7 @@ namespace Game.Properties.Modifiers
             {
                 Value = m_Value,
                 Name = m_Name,
-                Description = m_EnumProperty.Content
+                Description = m_EnumProperty.Content.ToString()
             };
         }
 
@@ -46,8 +46,7 @@ namespace Game.Properties.Modifiers
             reader.ReadEndElement();
 
             string factoryName = reader.ReadElementString("Factory");
-            var factory = EnumProperty<string>.Generator.FindFactory(factoryName);
-            m_EnumProperty = factory.Find(m_Name);
+            m_EnumProperty = EnumProperty.Find(factoryName, m_Name);
         }
 
         public override void Update(ref NumericalPropertyChangeEventStruct<int, KDMNumericalPropertyContext, KDMNumericalPropertyModifierReader> i_EventData)

@@ -16,7 +16,8 @@ namespace Game.Properties.Modifiers
         {
             return new KDMNumericalPropertyModifierReader()
             {
-                Value = i_Context.Survivor.Frenzy.GetValue(),
+                //Value = i_Context.Survivor.Frenzy.GetValue(),
+                Value = 0,
                 Description = m_Description,
                 Name = m_Name
             };
@@ -24,7 +25,7 @@ namespace Game.Properties.Modifiers
 
         public override void Update(ref NumericalPropertyChangeEventStruct<int, KDMNumericalPropertyContext, KDMNumericalPropertyModifierReader> i_EventData)
         {
-            i_EventData.NewModifier += i_EventData.Context.Survivor.Frenzy.GetValue();
+            //i_EventData.NewModifier += i_EventData.Context.Survivor.Frenzy.GetValue();
         }
 
         public override bool SerializeForProperty(KDMNumericalProperty i_Property)

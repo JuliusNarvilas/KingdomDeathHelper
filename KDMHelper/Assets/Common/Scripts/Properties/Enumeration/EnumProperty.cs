@@ -1,13 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace Common.Properties.Enumeration
 {
     /// <summary>
-    /// A simple property that represents a unique string (per generator used).
+    /// A simple property that represents a unique value (per generator used).
     /// </summary>
-    public class EnumProperty<TContent> : Property<string>
+    public class EnumProperty : Property<object>
     {
         /// <summary>
         /// A factory class that manages <see cref="EnumProperty{TContent}"/> instantiation and maintains a set of unique values for this class instance.
@@ -17,41 +18,48 @@ namespace Common.Properties.Enumeration
             /// <summary>
             /// Collection with <see cref="IList{T}"/> and <see cref="IDictionary{TKey, TValue}"/> functionality for storing generated <see cref="EnumProperty{TContent}"/> instances.
             /// </summary>
-            private class EnumPropertyCollection : KeyedCollection<string, EnumProperty<TContent>>
+            private class EnumPropertyCollection : KeyedCollection<object, EnumProperty>
             {
-                protected override string GetKeyForItem(EnumProperty<TContent> item)
+                protected override object GetKeyForItem(EnumProperty item)
                 {
                     return item.GetValue();
                 }
 
-                public EnumProperty<TContent>[] ToArray()
+                public EnumProperty[] ToArray()
                 {
                     return Items.ToArray();
                 }
 
-                public bool TryGetValue(string i_Key, out EnumProperty<TContent> o_Value)
+                public bool TryGetValue(object i_Key, out EnumProperty o_Value)
                 {
                     return Dictionary.TryGetValue(i_Key, out o_Value);
                 }
             }
             
-            private static readonly List<Generator> s_Factories = new List<Generator>();
+            private static readonly Dictionary<string, Generator> s_Factories = new Dictionary<string, Generator>();
             /// <summary>
             /// Get an array of all the factories for <see cref="EnumProperty{TContent}"/>.
             /// </summary>
-            public static Generator[] AllFactories { get { return s_Factories.ToArray(); } }
+            public static Generator[] AllFactories { get { return s_Factories.Values.ToArray(); } }
 
             public static Generator FindFactory(string i_Name)
             {
-                int count = s_Factories.Count;
-                for (int i = 0; i < count; ++i)
+                Generator result = null;
+                if (s_Factories.TryGetValue(i_Name, out result))
                 {
-                    if(s_Factories[i].Name == i_Name)
-                    {
-                        return s_Factories[i];
-                    }
+                    return result;
                 }
                 return null;
+            }
+
+            public static Generator FindCreateFactory(string i_Name)
+            {
+                Generator result = FindFactory(i_Name);
+                if(result == null)
+                {
+                    result = new Generator(i_Name);
+                }
+                return result;
             }
 
             /// <summary>
@@ -63,10 +71,11 @@ namespace Common.Properties.Enumeration
             /// </summary>
             private readonly EnumPropertyCollection m_PropertyCollection = new EnumPropertyCollection();
 
-            public Generator(string i_Name)
+
+            private Generator(string i_Name)
             {
                 Name = i_Name;
-                s_Factories.Add(this);
+                s_Factories[i_Name] = this;
             }
 
             /// <summary>
@@ -75,20 +84,20 @@ namespace Common.Properties.Enumeration
             /// </summary>
             /// <param name="i_Name">Value of the <see cref="EnumProperty{TContent}"/>.</param>
             /// <returns>Instance of <see cref="EnumProperty{TContent}"/> that represents the provided value.</returns>
-            public EnumProperty<TContent> Create(string i_Name, TContent i_Content = default(TContent))
+            public EnumProperty Create(object i_Name, object i_Content = null)
             {
-                EnumProperty<TContent> result;
+                EnumProperty result;
                 if(!m_PropertyCollection.TryGetValue(i_Name, out result))
                 {
-                    result = new EnumProperty<TContent>(i_Name, this, i_Content);
+                    result = new EnumProperty(i_Name, this, i_Content);
                     m_PropertyCollection.Add(result);
                 }
                 return result;
             }
 
-            public EnumProperty<TContent> Find(string i_Name)
+            public EnumProperty Find(object i_Name)
             {
-                EnumProperty<TContent> result;
+                EnumProperty result;
                 if (m_PropertyCollection.TryGetValue(i_Name, out result))
                 {
                     return result;
@@ -101,9 +110,18 @@ namespace Common.Properties.Enumeration
                 return Name;
             }
         }
-        
-        public static readonly Generator DEFAULT_FACTORY = new Generator("Default");
 
+
+
+        public static EnumProperty Find(string i_FactoryName, object i_PropertyKey)
+        {
+            Generator gen = Generator.FindFactory(i_FactoryName);
+            if(gen != null)
+            {
+                return gen.Find(i_PropertyKey);
+            }
+            return null;
+        }
 
 
         /// <summary>
@@ -113,18 +131,17 @@ namespace Common.Properties.Enumeration
         /// <summary>
         /// Optional content to be associated with <see cref="EnumProperty{TContent}"/> instance.
         /// </summary>
-        public readonly TContent Content;
+        [NonSerialized]
+        public readonly object Content;
 
-        protected EnumProperty(string i_UniqueName, Generator i_Factory, TContent i_Content) : base(i_UniqueName)
+        protected EnumProperty(object i_UniqueValue, Generator i_Factory, object i_Content) : base(i_UniqueValue)
         {
             Factory = i_Factory;
             Content = i_Content;
         }
-        
 
-        public override string ToString()
-        {
-            return m_Value;
-        }
+        public EnumProperty() : base(null)
+        { }
+
     }
 }

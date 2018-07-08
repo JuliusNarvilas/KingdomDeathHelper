@@ -26,7 +26,7 @@ namespace Game.Display.Table
         private List<SurvivorsTableItemElementConfig> m_ItemElements;
 
         private TableItemElement[] m_ElementsByType;
-
+        private Survivor m_Survivor;
         private Coroutine m_DisplayElementsCoroutine;
 
         private void Awake()
@@ -60,6 +60,7 @@ namespace Game.Display.Table
 
         public void Set(Survivor i_Survivor)
         {
+            m_Survivor = i_Survivor;
             int count = m_ItemElements.Count;
             for(int i = 0; i < count; ++i)
             {

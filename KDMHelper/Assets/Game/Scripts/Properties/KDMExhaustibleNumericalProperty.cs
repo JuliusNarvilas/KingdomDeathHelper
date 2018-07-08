@@ -73,9 +73,8 @@ namespace Game.Properties
                 return;
             }
             
-            reader.ReadStartElement("BaseValue");
-            m_BaseValue = reader.ReadContentAsInt();
-            reader.ReadEndElement();
+            m_BaseValue = reader.ReadElementContentAsInt("BaseValue", string.Empty);
+            m_Depletion = reader.ReadElementContentAsInt("Depletion", string.Empty);
 
             reader.ReadStartElement("Modifiers");
             if (!reader.IsEmptyElement)
@@ -107,6 +106,7 @@ namespace Game.Properties
         public void WriteXml(XmlWriter writer)
         {
             writer.WriteElementString("BaseValue", m_BaseValue.ToString());
+            writer.WriteElementString("Depletion", m_Depletion.ToString());
 
             writer.WriteStartElement("Modifiers");
             int count = m_Modifiers.Count;

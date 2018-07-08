@@ -1,5 +1,10 @@
 ﻿using Common;
+using Common.IO;
+using Common.Properties.Enumeration;
+using Common.Properties.String;
 using Game.IO.InfoDB;
+using Game.Model;
+using Game.Model.Character;
 using Game.Properties;
 using Game.Properties.Modifiers;
 using System;
@@ -56,12 +61,6 @@ namespace Game
 
             m_PersistentDataPath = Application.persistentDataPath;
 
-            KDMNumericalProperty.RegisterModifierType(typeof(CustomNumericalPropertyModifier));
-            KDMNumericalProperty.RegisterModifierType(typeof(EnumReferencedNumericalPropertyModifier));
-            KDMNumericalProperty.RegisterModifierType(typeof(KDMNumericalPropertyModifier));
-
-
-
             s_State = EState.LoadingData;
             StartCoroutine(Load());
         }
@@ -88,7 +87,7 @@ namespace Game
             s_Namespaces.Add(string.Empty, string.Empty);
             XmlSerializer s_Serializer = new XmlSerializer(typeof(KDMNumericalProperty));
 
-            KDMNumericalProperty test = new KDMNumericalProperty("test", 2);
+            KDMNumericalProperty test = new KDMNumericalProperty(2);
             test.AddModifier(new CustomNumericalPropertyModifier("test", 3));
             test.AddModifier(new CustomNumericalPropertyModifier("test", -1));
             test.AddModifier(new CustomNumericalPropertyModifier("test", 2));
@@ -125,6 +124,83 @@ namespace Game
             Debug.Log(result.GetModifierCount());
 
             mem.Dispose();
+
+
+            ///////////////////////////////////////////////////////////////////////
+            //TESTING
+            //////////////////////////////////////////////////////////////////////
+
+            Survivor2 survivor2 = new Survivor2();
+
+            NamedProperty namedProp = new NamedProperty();
+            namedProp.Property = new ObservableStringProperty("");
+            namedProp.SetName("Name");
+            survivor2.Properties.Add(namedProp);
+
+            EnumProperty.Generator gen = EnumProperty.Generator.FindCreateFactory("Gender");
+            namedProp = new NamedProperty();
+            namedProp.Property = new ObservableEnumProperty(gen.Create("Unknown"));
+            namedProp.SetName("Gender");
+            survivor2.Properties.Add(namedProp);
+
+            namedProp = new NamedProperty();
+            namedProp.Property = new KDMNumericalProperty(0);
+            namedProp.SetName("HuntXp");
+            survivor2.Properties.Add(namedProp);
+
+            namedProp = new NamedProperty();
+            namedProp.Property = new ObservableStringProperty("");
+            namedProp.SetName("Name");
+            survivor2.Properties.Add(namedProp);
+
+            namedProp = new NamedProperty();
+            namedProp.Property = new ObservableStringProperty("");
+            namedProp.SetName("Name");
+            survivor2.Properties.Add(namedProp);
+
+            namedProp = new NamedProperty();
+            namedProp.Property = new ObservableStringProperty("");
+            namedProp.SetName("Name");
+            survivor2.Properties.Add(namedProp);
+
+            namedProp = new NamedProperty();
+            namedProp.Property = new ObservableStringProperty("");
+            namedProp.SetName("Name");
+            survivor2.Properties.Add(namedProp);
+
+
+            mem = new MemoryStream();
+            writer = XmlWriter.Create(mem);
+            writer.WriteStartDocument();
+
+            XMLHelpers.Serialize(survivor2, writer);
+
+            writer.WriteEndDocument();
+            writer.Flush();
+
+            mem.Position = 0;
+            sr = new StreamReader(mem);
+            myStr = sr.ReadToEnd();
+
+            Debug.Log(myStr);
+
+            mem.Dispose();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         }
 
         private void OnEnable()
@@ -147,6 +223,12 @@ namespace Game
         private void OnApplicationQuit()
         {
             //TODO: autosave
+        }
+
+
+        public void DisplaySurvivor(Survivor i_Character)
+        {
+
         }
 
 

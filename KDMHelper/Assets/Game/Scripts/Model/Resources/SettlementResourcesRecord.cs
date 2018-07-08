@@ -8,7 +8,7 @@ namespace Game.Model.Resources
 {
     public class SettlementResourcesRecord
     {
-        public EnumProperty<string> ResourceType;
+        public EnumProperty ResourceType;
         public int Count;
     }
 }

@@ -12,7 +12,7 @@ namespace Game.Model.Gear
         {
             protected override string GetKeyForItem(SettlementGearRecord item)
             {
-                return item.GearType.GetValue();
+                return item.GearType.GetValue().ToString();
             }
 
             public SettlementGearRecord[] ToArray()

@@ -1,4 +1,5 @@
-﻿using Common.Properties.Numerical.Data;
+﻿using System;
+using Common.Properties.Numerical.Data;
 
 namespace Common.Properties.Numerical
 {
@@ -10,9 +11,10 @@ namespace Common.Properties.Numerical
     /// <typeparam name="TContext">The type of the context.</typeparam>
     /// <typeparam name="TModifierReader">The type of the modifier reader.</typeparam>
     /// <seealso cref="Common.Properties.Numerical.ExhaustibleNumericalProperty{TNumerical, TContext, TModifierReader}" />
-    public class ObservableExhaustibleNumericalProperty<TNumerical, TContext, TModifierReader> : ExhaustibleNumericalProperty<TNumerical, TContext, TModifierReader> where TModifierReader : INumericalPropertyModifierReader<TNumerical>
+    public class ObservableExhaustibleNumericalProperty<TNumerical, TContext, TModifierReader> : ExhaustibleNumericalProperty<TNumerical, TContext, TModifierReader>, IObservablePropertySimpleSubscription where TModifierReader : INumericalPropertyModifierReader<TNumerical>
     {
         public event NumericalPropertyEventHandler<TNumerical, TContext, TModifierReader> ChangeSubscription;
+        public event Action<object> SimpleChangeSubscription;
 
         public ObservableExhaustibleNumericalProperty(INumericalPropertyData<TNumerical> i_Value) : base(i_Value)
         { }
@@ -24,7 +26,7 @@ namespace Common.Properties.Numerical
         /// <param name="i_Context">The change context.</param>
         protected override void UpdateInternal(ENumericalPropertyChangeType i_ChangeTypeMask, TContext i_Context)
         {
-            if ((m_Modifiers.Count > 0) || (ChangeSubscription != null))
+            if ((m_Modifiers.Count > 0) || (ChangeSubscription != null) || (SimpleChangeSubscription != null))
             {
                 if (!m_Updating)
                 {
@@ -70,6 +72,10 @@ namespace Common.Properties.Numerical
             if (ChangeSubscription != null)
             {
                 ChangeSubscription(ref i_EventData);
+            }
+            if (SimpleChangeSubscription != null)
+            {
+                SimpleChangeSubscription(this);
             }
         }
     }

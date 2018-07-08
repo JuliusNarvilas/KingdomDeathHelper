@@ -36,9 +36,9 @@ namespace Game.Model
 
         public string SettlementName;
 
-        public EnumProperty<Campaign> CampaignType;
+        public EnumProperty CampaignType;
 
-        public SurvivorNumericalProperty MaxSurvival;
+        //public SurvivorNumericalProperty MaxSurvival;
 
         public SettlementTimeline Timeline;
 
@@ -50,14 +50,14 @@ namespace Game.Model
 
 
 
-        public List<EnumProperty<WeaponProficiencyInfo>> WeaponMasteries;
-        public List<EnumProperty<string>> Innovations;
-        public List<EnumProperty<string>> Principals;
+        public List<EnumProperty> WeaponMasteries;
+        public List<EnumProperty> Innovations;
+        public List<EnumProperty> Principals;
 
 
-        public List<EnumProperty<string>> Quarries;
+        public List<EnumProperty> Quarries;
         //will probably change to add nemesis lvl tracking
-        public List<EnumProperty<string>> Nemesis;
+        public List<EnumProperty> Nemesis;
 
         public SettlementResources Resources;
 

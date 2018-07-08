@@ -25,7 +25,8 @@ namespace Game.Properties.Modifiers
         public override void Update(ref NumericalPropertyChangeEventStruct<int, KDMNumericalPropertyContext, KDMNumericalPropertyModifierReader> i_EventData)
         {
             int currentValue = i_EventData.NumericalProperty.GetValue() + i_EventData.NewModifier;
-            int maxSurvival = i_EventData.Context.Settlement.MaxSurvival.GetValue();
+            //int maxSurvival = i_EventData.Context.Settlement.MaxSurvival.GetValue();
+            int maxSurvival = 1;
             if (currentValue > maxSurvival)
             {
                 i_EventData.NumericalProperty.SetBaseValue(maxSurvival - i_EventData.NewModifier);
