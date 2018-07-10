@@ -27,25 +27,12 @@ namespace Game.Properties
             s_Namespaces.Add(string.Empty, string.Empty);
         }
 
-        public KDMExhaustibleNumericalProperty(string i_Name) : base(new NumericalPropertyIntData(0))
-        {
-            m_Name = i_Name;
-        }
-        public KDMExhaustibleNumericalProperty(string i_Name, int i_Value) : base(new NumericalPropertyIntData(i_Value))
-        {
-            m_Name = i_Name;
-        }
-        public KDMExhaustibleNumericalProperty(string i_Name, INumericalPropertyData<int> i_Value) : base(i_Value)
-        {
-            m_Name = i_Name;
-        }
-
-        protected string m_Name;
-
-        public string GetName()
-        {
-            return m_Name;
-        }
+        public KDMExhaustibleNumericalProperty() : base(new NumericalPropertyIntData(0))
+        { }
+        public KDMExhaustibleNumericalProperty(int i_Value) : base(new NumericalPropertyIntData(i_Value))
+        { }
+        public KDMExhaustibleNumericalProperty(INumericalPropertyData<int> i_Value) : base(i_Value)
+        { }
 
 
         public virtual KDMNumericalPropertyContext GetContext()

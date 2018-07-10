@@ -2,13 +2,16 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Xml;
+using System.Xml.Schema;
+using System.Xml.Serialization;
 
 namespace Common.Properties.String
 {
     /// <summary>
     /// A simple property that represents a string value.
     /// </summary>
-    public class ObservableStringProperty : StringProperty , IObservablePropertySimpleSubscription
+    public class ObservableStringProperty : StringProperty , IObservablePropertySimpleSubscription, IXmlSerializable
     {
         public event PropertyChangeHandler<string, ObservableStringProperty> ChangeSubscription;
         public event Action<object> SimpleChangeSubscription;
@@ -32,6 +35,21 @@ namespace Common.Properties.String
             {
                 SimpleChangeSubscription(this);
             }
+        }
+
+        public XmlSchema GetSchema()
+        {
+            return null;
+        }
+
+        public void ReadXml(XmlReader reader)
+        {
+            m_Value = reader.ReadElementString("Text");
+        }
+
+        public void WriteXml(XmlWriter writer)
+        {
+            writer.WriteElementString("Text", m_Value);
         }
     }
 }

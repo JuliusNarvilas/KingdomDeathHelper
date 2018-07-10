@@ -144,14 +144,166 @@ namespace Game
             survivor2.Properties.Add(namedProp);
 
             namedProp = new NamedProperty();
-            namedProp.Property = new KDMNumericalProperty(0);
+            namedProp.Property = new KDMExhaustibleNumericalProperty(16);
+            (namedProp.Property as KDMExhaustibleNumericalProperty).Deplete(16);
             namedProp.SetName("HuntXp");
             survivor2.Properties.Add(namedProp);
 
+
+
             namedProp = new NamedProperty();
-            namedProp.Property = new ObservableStringProperty("");
-            namedProp.SetName("Name");
+            namedProp.Property = new KDMExhaustibleNumericalProperty(8);
+            (namedProp.Property as KDMExhaustibleNumericalProperty).Deplete(8);
+            namedProp.SetName("Weapon Proficiency");
             survivor2.Properties.Add(namedProp);
+
+            gen = EnumProperty.Generator.FindCreateFactory("Weapon Specialisation");
+            namedProp = new NamedProperty();
+            namedProp.Property = new ObservableEnumProperty(gen.Create("Unknown"));
+            namedProp.SetName("Weapon Specialisation");
+            survivor2.Properties.Add(namedProp);
+
+
+            namedProp = new NamedProperty();
+            namedProp.Property = new KDMExhaustibleNumericalProperty(0);
+            namedProp.SetName("Survival");
+            survivor2.Properties.Add(namedProp);
+
+
+            namedProp = new NamedProperty();
+            namedProp.Property = new KDMNumericalProperty(5);
+            namedProp.SetName("Movement");
+            survivor2.Properties.Add(namedProp);
+
+            namedProp = new NamedProperty();
+            namedProp.Property = new KDMNumericalProperty(0);
+            namedProp.SetName("Accuracy");
+            survivor2.Properties.Add(namedProp);
+
+            namedProp = new NamedProperty();
+            namedProp.Property = new KDMNumericalProperty(0);
+            namedProp.SetName("Strength");
+            survivor2.Properties.Add(namedProp);
+
+            namedProp = new NamedProperty();
+            namedProp.Property = new KDMNumericalProperty(0);
+            namedProp.SetName("Evasion");
+            survivor2.Properties.Add(namedProp);
+
+            namedProp = new NamedProperty();
+            namedProp.Property = new KDMNumericalProperty(0);
+            namedProp.SetName("Luck");
+            survivor2.Properties.Add(namedProp);
+
+            namedProp = new NamedProperty();
+            namedProp.Property = new KDMNumericalProperty(0);
+            namedProp.SetName("Speed");
+            survivor2.Properties.Add(namedProp);
+
+
+
+            namedProp = new NamedProperty();
+            namedProp.Property = new KDMExhaustibleNumericalProperty(9);
+            (namedProp.Property as KDMExhaustibleNumericalProperty).Deplete(9);
+            namedProp.SetName("Courage");
+            survivor2.Properties.Add(namedProp);
+
+            namedProp = new NamedProperty();
+            namedProp.Property = new KDMExhaustibleNumericalProperty(9);
+            (namedProp.Property as KDMExhaustibleNumericalProperty).Deplete(9);
+            namedProp.SetName("Understanding");
+            survivor2.Properties.Add(namedProp);
+
+
+
+
+            namedProp = new NamedProperty();
+            namedProp.Property = new KDMNumericalProperty(0);
+            namedProp.SetName("Brain");
+            survivor2.Properties.Add(namedProp);
+
+            namedProp = new NamedProperty();
+            namedProp.Property = new KDMNumericalProperty(0);
+            namedProp.SetName("BrainInjury");
+            survivor2.Properties.Add(namedProp);
+
+            namedProp = new NamedProperty();
+            namedProp.Property = new KDMNumericalProperty(0);
+            namedProp.SetName("Arms");
+            survivor2.Properties.Add(namedProp);
+
+            namedProp = new NamedProperty();
+            namedProp.Property = new KDMNumericalProperty(0);
+            namedProp.SetName("ArmsInjury");
+            survivor2.Properties.Add(namedProp);
+
+            namedProp = new NamedProperty();
+            namedProp.Property = new KDMNumericalProperty(0);
+            namedProp.SetName("Body");
+            survivor2.Properties.Add(namedProp);
+
+            namedProp = new NamedProperty();
+            namedProp.Property = new KDMNumericalProperty(0);
+            namedProp.SetName("BodyInjury");
+            survivor2.Properties.Add(namedProp);
+
+            namedProp = new NamedProperty();
+            namedProp.Property = new KDMNumericalProperty(0);
+            namedProp.SetName("Waist");
+            survivor2.Properties.Add(namedProp);
+
+            namedProp = new NamedProperty();
+            namedProp.Property = new KDMNumericalProperty(0);
+            namedProp.SetName("WaistInjury");
+            survivor2.Properties.Add(namedProp);
+
+            namedProp = new NamedProperty();
+            namedProp.Property = new KDMNumericalProperty(0);
+            namedProp.SetName("Legs");
+            survivor2.Properties.Add(namedProp);
+
+            namedProp = new NamedProperty();
+            namedProp.Property = new KDMNumericalProperty(0);
+            namedProp.SetName("LegsInjury");
+            survivor2.Properties.Add(namedProp);
+
+
+
+
+
+
+
+
+            namedProp = new NamedProperty();
+            namedProp.Property = new KDMListProperty();
+            (namedProp.Property as KDMListProperty).AllowedTypes.Add(new PropertyType(typeof(KDMStringProperty)));
+            (namedProp.Property as KDMListProperty).AllowedTypes.Add(new PropertyType(typeof(EnumProperty), "Fighting Arts"));
+            (namedProp.Property as KDMListProperty).AllowedTypes.Add(new PropertyType(typeof(EnumProperty), "Secret Fighting Arts"));
+            namedProp.SetName("Fighting Arts");
+            survivor2.Properties.Add(namedProp);
+
+            namedProp = new NamedProperty();
+            namedProp.Property = new KDMListProperty();
+            (namedProp.Property as KDMListProperty).AllowedTypes.Add(new PropertyType(typeof(KDMStringProperty)));
+            (namedProp.Property as KDMListProperty).AllowedTypes.Add(new PropertyType(typeof(EnumProperty), "Disorders"));
+            namedProp.SetName("Disorders");
+            survivor2.Properties.Add(namedProp);
+
+            namedProp = new NamedProperty();
+            namedProp.Property = new KDMListProperty();
+            (namedProp.Property as KDMListProperty).AllowedTypes.Add(new PropertyType(typeof(KDMStringProperty)));
+            (namedProp.Property as KDMListProperty).AllowedTypes.Add(new PropertyType(typeof(EnumProperty), "Abilities"));
+            (namedProp.Property as KDMListProperty).AllowedTypes.Add(new PropertyType(typeof(EnumProperty), "Impairments"));
+            namedProp.SetName("Abilities & Impairments");
+            survivor2.Properties.Add(namedProp);
+
+            /*
+            namedProp = new NamedProperty();
+            namedProp.Property = new KDMNumericalProperty(0);
+            namedProp.SetName("ArmsInjury");
+            survivor2.Properties.Add(namedProp);
+
+
 
             namedProp = new NamedProperty();
             namedProp.Property = new ObservableStringProperty("");
@@ -162,12 +314,7 @@ namespace Game
             namedProp.Property = new ObservableStringProperty("");
             namedProp.SetName("Name");
             survivor2.Properties.Add(namedProp);
-
-            namedProp = new NamedProperty();
-            namedProp.Property = new ObservableStringProperty("");
-            namedProp.SetName("Name");
-            survivor2.Properties.Add(namedProp);
-
+            */
 
             mem = new MemoryStream();
             writer = XmlWriter.Create(mem);
@@ -182,7 +329,8 @@ namespace Game
             sr = new StreamReader(mem);
             myStr = sr.ReadToEnd();
 
-            Debug.Log(myStr);
+            File.WriteAllText("D:\\Temp\\test\\out.xml", myStr);
+            //Debug.Log(myStr);
 
             mem.Dispose();
 

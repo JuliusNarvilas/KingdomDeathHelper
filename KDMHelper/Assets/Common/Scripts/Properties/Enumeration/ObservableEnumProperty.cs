@@ -2,13 +2,17 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Xml;
+using System.Xml.Schema;
+using System.Xml.Serialization;
 
 namespace Common.Properties.Enumeration
 {
     /// <summary>
     /// A simple property that represents a unique value (per generator used).
     /// </summary>
-    public class ObservableEnumProperty : Property<EnumProperty>, IObservablePropertySimpleSubscription
+    [Serializable]
+    public class ObservableEnumProperty : Property<EnumProperty>, IObservablePropertySimpleSubscription, IXmlSerializable
     {
 
         public event PropertyChangeHandler<EnumProperty, ObservableEnumProperty> ChangeSubscription;
@@ -32,6 +36,35 @@ namespace Common.Properties.Enumeration
                 SimpleChangeSubscription(this);
             }
         }
-        
+
+
+        public XmlSchema GetSchema()
+        {
+            return null;
+        }
+
+        public void ReadXml(XmlReader reader)
+        {
+            bool wasEmpty = reader.IsEmptyElement;
+            reader.Read();
+            if (wasEmpty)
+            {
+                return;
+            }
+
+            string factoryName = reader.ReadElementString("Factory");
+            string key = reader.ReadElementString("Key");
+
+            m_Value = EnumProperty.Find(factoryName, key);
+        }
+
+        public void WriteXml(XmlWriter writer)
+        {
+            if(m_Value != null)
+            {
+                writer.WriteElementString("Factory", m_Value.Factory.Name);
+                writer.WriteElementString("Key", m_Value.GetValue().ToString());
+            }
+        }
     }
 }

@@ -146,7 +146,6 @@ namespace Game.Properties
             {
                 while (reader.NodeType != XmlNodeType.EndElement)
                 {
-                    string typeName = reader.Name;
                     reader.ReadStartElement("Modifier");
                     string typeString = reader.ReadElementString("Type");
 

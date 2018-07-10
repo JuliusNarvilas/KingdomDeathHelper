@@ -36,9 +36,14 @@ namespace Common.Properties
         /// Property constructor that initialises its value to the given input.
         /// </summary>
         /// <param name="i_Value">Initial Property value.</param>
-        protected Property(T i_Value)
+        public Property(T i_Value)
         {
             m_Value = i_Value;
+        }
+
+        protected Property()
+        {
+            m_Value = default(T);
         }
 
         /// <summary>
