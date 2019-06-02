@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8920fc0bf8caec049acb98d5eb083b75, type: 3}
+  m_Name: InfoDBController
+  m_EditorClassIdentifier: 
+  Sources:
+  - Name: Disorders
+    m_DefaultContentAsset: {fileID: 4900000, guid: 4195d6985b8d4b447a3ed187c45925cb,
+      type: 3}
+  - Name: Fighting Arts
+    m_DefaultContentAsset: {fileID: 4900000, guid: 98b7d3d766a70144895c3443244d9c0f,
+      type: 3}
+  - Name: Innovations
+    m_DefaultContentAsset: {fileID: 4900000, guid: 8e39ba15a31d2454381e8cfdf94a921e,
+      type: 3}
+  - Name: Gear
+    m_DefaultContentAsset: {fileID: 4900000, guid: 6f281947e3a7c2240bd937c4e3bdf16b,
+      type: 3}

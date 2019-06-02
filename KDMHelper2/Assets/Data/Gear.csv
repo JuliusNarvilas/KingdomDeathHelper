@@ -1,0 +1,28 @@
+﻿1,
+Name,Description
+Accessory,Accessory gear may be worn in addition to armor on a hit location. Each accessory specifies the hit location it covers.
+Ammo - Bow,You must have a bow in your grid to activate this card. Ammo has the range of a bow in your gear grid.
+Block X,Spend activiation to ignore X hits the next time you are attacked. Lasts until your next act.
+Cumbersome,Survivors must spend both movement and activiation to activate Cumbersome gear.
+Cursed,"This gear cannot be removed from the gear grid for any reason. If the survivor dies, archive this gear."
+Deadly X,Gain +X luck while attacking with this weapon. This increases the odds of inflicting critical wounds.
+Devastating X,"When a devastating weapon wounds a monster, it will inflict X additional wounds."
+Early Iron,"When any of your attack roll results are a 1, cancel your attack."
+Frail,Frail weapons are destroyed if the survivor attempts to wound a Super-dense location with them. Archive the wapon at the end of the attack.
+Irreplaceable,"If a survivor dies, archive all irreplaceable gear in their gear grid."
+Paired,"Paried weapons are two identical wapons that can be used as one. Add the speed of the second weapon when attacking with the first. These weapons must have the same name,and both must be in your gear grid."
+Pounce,Spend (⚡) and (♞) to move 3 spaces forward in a straight line and activate a melee weapon. This attack gains +1 strength.
+Provoke,"When you wound with this weapon, gain the priority target token."
+Puzzle Affinity,Puzzle affinity bonsuse can only be gained if the affinities are completed using the affinities on that specific ard (indicated by puzzle pieces instead of boxes).
+Range X,Survivors this many or fewer spaces away from a monster may attack with this weapon. Ranged weapons cannot be used if field of view to the monster is blocked.
+Reach X,Reach weapons are long enough to attack monsters when the survivor is not adjacent. Reach specifies the maximum number of spaces away that a survivor can attack with this weapon.
+Savage,"After the first critical wound in an attack, savage weapons cause 1 additional wound. This rule does not trigger on Impervious hit locations."
+Sentient,The suvvivor must be insane to activate this gear.
+Sharp,Add 1d10 strength to each wound attempt using this gear. This d10 is not a wound rolle and cannot cause critical wound.
+Slam,"Spend (♞) and full move forward in a straight line. If you move 4+ spaces and stop adjacent to a monster, it suffers knockback 1 and -1 toughness until the end of the round."
+Slow,Slow weapons always have an attack speed of 1. Do not add speed modifiers.
+Undeathable,"If the survivor dies, roll 1d10. On a result of 6+, the survivor lives. If this roll occurs from the survivor having a lethal amount of bleeding tokens, the survivor will not die until they gain another bleeding token."
+Unique,A settlement may only have one copy of this gear card at a time.
+Unshakable,"When this survivor draws a trap card, roll 1d10. On a result of 6+, ignore the trap. Discord it and shuffle the hit location deck."
+Unstoppable,"Replace all wound rolls with a 1d10 rool. On 1-4, fail to wound, on 6+ wound. You cannot cause a critical wound while using this rule."
+Unwieldly,"If any attack dice roll results are 1, the weapon causes 1 random damage to the survivor for each 1 rolled. Continue the attack as normal."

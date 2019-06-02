@@ -1,0 +1,128 @@
+<Campaign>
+
+    <SurvivorConfig>
+
+        <Property>
+            <Name>Hunt Xp</Name>
+            <Type>KDMNumericalProperty</Type>
+            <Config>
+                <KDMNumericalProperty>
+                    <BaseValue>10</BaseValue>
+                    <Depletion>10</Depletion>
+                </KDMNumericalProperty>
+            </Config>
+        </Property>
+
+        <Property>
+            <Name>Gender</Name>
+            <Type>EnumProperty</Type>
+            <Config>
+                <EnumProperty>
+                    <Factory>Gender</Factory>
+                    <Key>Unknown</Key>
+                </EnumProperty>
+            </Config>
+        </Property>
+
+        <Property>
+            <Name>Weapon Specialisation</Name>
+            <Type>KDMNumericalProperty</Type>
+            <Config>
+                <KDMNumericalProperty>
+                    <BaseValue>10</BaseValue>
+                    <Depletion>10</Depletion>
+                </KDMNumericalProperty>
+            </Config>
+        </Property>
+
+        <PropertyList>
+            <Name>Disorders</Name>
+            <Type>EnumProperty</Type>
+            <Config>
+                <FactoryName>Disorders</FactoryName>
+            </Config>
+        </PropertyList>
+
+    </SurvivorConfig>
+
+</Campaign>
+
+<?xml version="1.0" encoding="utf-8"?>
+<KDMNumericalProperty>
+    <BaseValue>2</BaseValue>
+    <Modifiers>
+        <CustomNumericalPropertyModifier>
+            <Order>1</Order>
+            <Name>test</Name>
+            <Value>3</Value>
+            <Description />
+        </CustomNumericalPropertyModifier>
+        <CustomNumericalPropertyModifier>
+            <Order>1</Order>
+            <Name>test</Name>
+            <Value>-1</Value>
+            <Description />
+        </CustomNumericalPropertyModifier>
+        <CustomNumericalPropertyModifier>
+            <Order>1</Order>
+            <Name>test</Name>
+            <Value>2</Value>
+            <Description />
+        </CustomNumericalPropertyModifier>
+    </Modifiers>
+</KDMNumericalProperty>
+
+
+<?xml version="1.0" encoding="utf-8"?>
+<KDMNumericalProperty>
+    <BaseValue>2</BaseValue>
+    <Modifiers>
+        <Modifier>
+            <Type>Game.Properties.Modifiers.CustomNumericalPropertyModifier, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+                PublicKeyToken=null</Type>
+            <CustomNumericalPropertyModifier>
+                <Order>1</Order>
+                <Name>test</Name>
+                <Value>3</Value>
+                <Description />
+            </CustomNumericalPropertyModifier>
+        </Modifier>
+        <Modifier>
+            <Type>Game.Properties.Modifiers.CustomNumericalPropertyModifier, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+                PublicKeyToken=null</Type>
+            <CustomNumericalPropertyModifier>
+                <Order>1</Order>
+                <Name>test</Name>
+                <Value>-1</Value>
+                <Description />
+            </CustomNumericalPropertyModifier>
+        </Modifier>
+        <Modifier>
+            <Type>Game.Properties.Modifiers.CustomNumericalPropertyModifier, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+                PublicKeyToken=null</Type>
+            <CustomNumericalPropertyModifier>
+                <Order>1</Order>
+                <Name>test</Name>
+                <Value>2</Value>
+                <Description />
+            </CustomNumericalPropertyModifier>
+        </Modifier>
+    </Modifiers>
+</KDMNumericalProperty>
+
+
+<?xml version="1.0" encoding="utf-8"?>
+<Survivor2>
+    <Id>00000000-0000-0000-0000-000000000000</Id>
+    <WritePermissionToken>00000000-0000-0000-0000-000000000000</WritePermissionToken>
+    <Properties>
+        <NamedProperty>
+            <Name>Name</Name>
+            <PropertyType>Game.Properties.KDMNumericalProperty, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</PropertyType>
+            <KDMNumericalProperty>
+                <BaseValue>3</BaseValue>
+                <Modifiers />
+            </KDMNumericalProperty>
+        </NamedProperty>
+    </Properties>
+</Survivor2>

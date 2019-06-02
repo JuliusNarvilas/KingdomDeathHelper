@@ -3,6 +3,10 @@ using UnityEngine;
 
 namespace Common.IO
 {
+    /// <summary>
+    /// Attribute for 
+    /// </summary>
+    /// <seealso cref="UnityEngine.PropertyAttribute" />
     [AttributeUsage(AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
     public class AssetReferenceTypeAttribute : PropertyAttribute
     {

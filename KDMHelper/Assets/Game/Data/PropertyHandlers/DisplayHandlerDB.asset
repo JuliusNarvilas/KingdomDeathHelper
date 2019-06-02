@@ -1,0 +1,90 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e930fac5e3571f448aa1d0216fd084f1, type: 3}
+  m_Name: DisplayHandlerDB
+  m_EditorClassIdentifier: 
+  Records:
+  - TypeToDisplay: Game.Properties.KDMNumericalProperty
+    DisplayMode: 0
+    Handler: {fileID: 114330769046886980, guid: 4015f4feca4d9984db3292eafba33bca,
+      type: 2}
+  - TypeToDisplay: Game.Properties.KDMNumericalProperty
+    DisplayMode: 1
+    Handler: {fileID: 114516059434867852, guid: 724d36aaa31735048b3a516673e377de,
+      type: 2}
+  - TypeToDisplay: Game.Properties.KDMNumericalProperty
+    DisplayMode: 2
+    Handler: {fileID: 114142191603776972, guid: 36d892e67ca6bc34cb017f55dff29b82,
+      type: 2}
+  - TypeToDisplay: Game.Properties.KDMNumericalProperty
+    DisplayMode: 3
+    Handler: {fileID: 114737026399223346, guid: f5d3103c10246d84887a6c117b6336ba,
+      type: 2}
+  - TypeToDisplay: Game.Properties.KDMNumericalProperty
+    DisplayMode: 4
+    Handler: {fileID: 114495594470119562, guid: afc0eec695e22f649b7c1b3474dee5cf,
+      type: 2}
+  - TypeToDisplay: Game.Properties.KDMExhaustibleNumericalProperty
+    DisplayMode: 0
+    Handler: {fileID: 114579290911282524, guid: 1617566f5c3deef4497ad375ea2b77e6,
+      type: 2}
+  - TypeToDisplay: Game.Properties.KDMExhaustibleNumericalProperty
+    DisplayMode: 1
+    Handler: {fileID: 114144154597341982, guid: 9349c8f90c3021b4db8fcd5bf2508ad3,
+      type: 2}
+  - TypeToDisplay: Game.Properties.KDMExhaustibleNumericalProperty
+    DisplayMode: 2
+    Handler: {fileID: 114448546230244954, guid: 6a4931b3d45b01a4cb3123dcd159c3d0,
+      type: 2}
+  - TypeToDisplay: Game.Properties.KDMExhaustibleNumericalProperty
+    DisplayMode: 3
+    Handler: {fileID: 114581543958388976, guid: c61f676bd7eed774c81fba719af8b81e,
+      type: 2}
+  - TypeToDisplay: Game.Properties.KDMExhaustibleNumericalProperty
+    DisplayMode: 4
+    Handler: {fileID: 114696895230254642, guid: ee0e62800bc5fd842b16092ff047930e,
+      type: 2}
+  - TypeToDisplay: Game.Properties.KDMStringProperty
+    DisplayMode: 0
+    Handler: {fileID: 114739891802920404, guid: b5b9889b65b213746b682d58fa8d8a62,
+      type: 2}
+  - TypeToDisplay: Game.Properties.KDMStringProperty
+    DisplayMode: 1
+    Handler: {fileID: 114092806561110942, guid: 7f9de14c0c447f44dbe3dcc0b2f9c56d,
+      type: 2}
+  - TypeToDisplay: Game.Properties.KDMStringProperty
+    DisplayMode: 2
+    Handler: {fileID: 114925310108112668, guid: 649bde88970fbe847a9fa27f5e23e706,
+      type: 2}
+  - TypeToDisplay: Game.Properties.KDMStringProperty
+    DisplayMode: 3
+    Handler: {fileID: 114637293672471932, guid: 88059683911cd13459016f3c1503dc35,
+      type: 2}
+  - TypeToDisplay: Game.Properties.KDMEnumProperty
+    DisplayMode: 0
+    Handler: {fileID: 114465083488190800, guid: 1d3d596ec9a220f478e30cf7cb0b735f,
+      type: 2}
+  - TypeToDisplay: Game.Properties.KDMEnumProperty
+    DisplayMode: 1
+    Handler: {fileID: 114996157515489900, guid: 87dfbe56dd07be648b474b57d30e1620,
+      type: 2}
+  - TypeToDisplay: Game.Properties.KDMEnumProperty
+    DisplayMode: 2
+    Handler: {fileID: 114451989221815226, guid: a45e74102d5197d43a75e135290b6efa,
+      type: 2}
+  - TypeToDisplay: Game.Properties.KDMEnumProperty
+    DisplayMode: 3
+    Handler: {fileID: 114577888689660326, guid: 2e1d0699cb4ae6544bde1ff482c8d083,
+      type: 2}
+  - TypeToDisplay: Game.Properties.KDMEnumProperty
+    DisplayMode: 4
+    Handler: {fileID: 114724407929899598, guid: 02d63c66af03bd044abae9fbfd81d6a1,
+      type: 2}

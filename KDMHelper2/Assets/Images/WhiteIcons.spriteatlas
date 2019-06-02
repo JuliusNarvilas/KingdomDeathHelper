@@ -1,0 +1,109 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: WhiteIcons
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 1
+      filterMode: 1
+      generateMipMaps: 1
+      readable: 1
+      crunchedCompression: 0
+      sRGB: 0
+    platformSettings:
+    - serializedVersion: 2
+      m_BuildTarget: DefaultTexturePlatform
+      m_MaxTextureSize: 2048
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: -1
+      m_TextureCompression: 1
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 0
+      m_AndroidETC2FallbackOverride: 0
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 1
+      enableTightPacking: 1
+    variantMultiplier: 1
+    packables:
+    - {fileID: 2800000, guid: 51c9e2fd5e474dd478f2f72f622f656f, type: 3}
+    - {fileID: 102900000, guid: d9628fc7f6fcb8b46a85676c598d2eda, type: 3}
+    - {fileID: 10917, guid: 0000000000000000f000000000000000, type: 0}
+    - {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+    - {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+    bindAsDefault: 1
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: 51c9e2fd5e474dd478f2f72f622f656f, type: 3}
+  - {fileID: 21300000, guid: a821ba391bfd5cb47b8ece3f598e9bea, type: 3}
+  - {fileID: 21300000, guid: 25a757ad5659d2c4198daa7e2003084d, type: 3}
+  - {fileID: 21300000, guid: e390535cc7a7b744dabc199b9075a715, type: 3}
+  - {fileID: 21300000, guid: 79d58ab599a620046983b5435e67d216, type: 3}
+  - {fileID: 21300000, guid: 829a22b2e54287343b8cae1cc7432859, type: 3}
+  - {fileID: 21300000, guid: c80c46067c1ba784394f36c21dc98c06, type: 3}
+  - {fileID: 21300000, guid: f97d70b620467954993326e2709c1e70, type: 3}
+  - {fileID: 21300000, guid: 39ab3a01070c2854d842c959ccd73df2, type: 3}
+  - {fileID: 21300000, guid: 413bf210b3f8c094988d672fe707f038, type: 3}
+  - {fileID: 21300000, guid: a54ba5caa01758c408dae2c80f3ea5ec, type: 3}
+  - {fileID: 21300000, guid: 39ef150816be1b54fbf9cb43a65c5e37, type: 3}
+  - {fileID: 21300000, guid: 678ee8b8cb61a9d409a2255aa0e89998, type: 3}
+  - {fileID: 21300000, guid: 18cf014d3f8efe3479cd9d1a9fe215bb, type: 3}
+  - {fileID: 21300000, guid: befde5d72f70b40458a67935e42f2fbf, type: 3}
+  - {fileID: 21300000, guid: 3e90dd4e8833a0a4b90adf3ef54daae1, type: 3}
+  - {fileID: 21300000, guid: 67cd35c0ff420e542a814ee115e9c536, type: 3}
+  - {fileID: 21300000, guid: 64494d057b225694fbb2f06f1b423c32, type: 3}
+  - {fileID: 21300000, guid: 73495a1055b9620498332bf8e7336e52, type: 3}
+  - {fileID: 21300000, guid: 84fa3bb9a06f2fa44bd2e529075a78d4, type: 3}
+  - {fileID: 21300000, guid: f4204b8753b62ef4e9dacb2eee6a145e, type: 3}
+  - {fileID: 21300000, guid: cee3338393dc8dd4b97b23ae6ad4910b, type: 3}
+  - {fileID: 21300000, guid: 19ea02ba0b2450140a68f5250858d08a, type: 3}
+  - {fileID: 21300000, guid: 0c04d14b6ec8ba242b01ea2937be4fa1, type: 3}
+  - {fileID: 21300000, guid: b80b4f8cafe382b44ab66a036caaa11e, type: 3}
+  - {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 10917, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+  m_PackedSpriteNamesToIndex:
+  - Logo
+  - TimelineWhite 256
+  - WaistWhite 256
+  - MaleWhite 256
+  - FemaleWhite 256
+  - EvasionWhite 256
+  - GenderWhite 256
+  - HeadWhite 256
+  - SpeedWhite 256
+  - SkullWhite 256
+  - BookWhite 256
+  - WeaponMasteryWhite 256
+  - PopulationWhite 256
+  - StrengthWhite 256
+  - BrainWhite 256
+  - BodyWhite 256
+  - LuckWhite 256
+  - UpSharpWhite 256
+  - SwordWhite 256
+  - SwordWhite 256
+  - AccuracyWhite 256
+  - LegsWhite 256
+  - CampfireWhite 256
+  - PlusWhite 256
+  - HandWhite 256
+  - Background
+  - UIMask
+  - UISprite
+  m_Tag: WhiteIcons
+  m_IsVariant: 0

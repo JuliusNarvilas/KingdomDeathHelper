@@ -1,4 +1,8 @@
-﻿using Common;
+﻿using Assets.Common.IO.FileHelpers;
+using Assets.Common.IO.FileHelpers.FileLoadSpecializations;
+using Assets.Game.Model.Config;
+using Assets.Game.Scripts.DisplayHandler;
+using Common;
 using Common.IO;
 using Common.Properties.Enumeration;
 using Common.Properties.String;
@@ -28,6 +32,9 @@ namespace Game
             Ready
         }
 
+        [SerializeField]
+        private string m_dataSourceConfigFile;
+
         private static EState s_State = EState.None;
         public static EState State { get { return s_State; } }
 
@@ -43,6 +50,11 @@ namespace Game
         [SerializeField]
         private InfoDBController m_InfoDB;
         public InfoDBController InfoDB { get { return m_InfoDB; } }
+
+        [SerializeField]
+        private DisplayHandlerDB m_displayHandlerDB;
+        public DisplayHandlerDB DisplayHandlerDB { get { return m_displayHandlerDB; } }
+
 
         private string m_PersistentDataPath;
         public string PersistentDataPath
@@ -382,6 +394,30 @@ namespace Game
 
         private IEnumerator Load()
         {
+            List<FileLoadHandle> result = new List<FileLoadHandle>();
+
+            XMLLoadHandle<ContentSourceConfig> loadSrcConfig = new XMLLoadHandle<ContentSourceConfig>(m_dataSourceConfigFile);
+            loadSrcConfig.BlockingLoad();
+
+            ContentSourceConfig contentSrc = loadSrcConfig.GetResultT();
+            int count = contentSrc.rexcrds.Count;
+            for (int i = 0; i < count; i++)
+            {
+                ContentSourceRecord rec = contentSrc.rexcrds[i];
+                FileLoadHandle newHandle = null;
+                switch (rec.sourceType)
+                {
+                    case "xml":
+                        newHandle = new XMLLoadHandle();
+                        break;
+                    case "csv":
+                        break;
+                    case "txt":
+                        break;
+                }
+            }
+
+
             if (InfoDB == null || InfoDB.Sources == null)
             {
                 yield break;

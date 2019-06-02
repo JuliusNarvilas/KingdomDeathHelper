@@ -10,6 +10,10 @@ namespace Common.IO
         bool UpdateAndFinish();
     }
 
+    /// <summary>
+    /// Task runner for other threads to queue up execution for main thread
+    /// </summary>
+    /// <seealso cref="Common.SingletonMonoBehaviour{Common.IO.AssetReferenceUpdateRunner}" />
     public class AssetReferenceUpdateRunner : SingletonMonoBehaviour<AssetReferenceUpdateRunner>
     {
         private bool m_Executing = false;

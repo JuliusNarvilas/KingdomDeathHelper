@@ -1,0 +1,43 @@
+1,,,,,
+Name,Category,Description,Type,Departing,Survival Limit
+Protect the Young,Principle,"When rolling on the Intimacy story event, roll twice and pick 1 result.",,,
+Survival of the Fittest,Principle,,,,1
+Graves,Principle,,,,
+Cannibalize,Principle,,,,1
+Collective Toil,Principle,,,,
+Accept Darkness,Principle,,,,
+Romantic,Principle,,,,1
+Barbaric,Principle,,,,1
+Heart Flute,Innovation,,Endeavor,,
+Language,Innovation,All survivors gain the Encourage survival action.,Survival Action,,1
+Hovel,,Departing survivors gain +1 survival.,Depart,1,1
+Scuplture,,Departing survivors gain +2 survival when they depart for a Nemesis Encounter.,Depart Nemesis,2,1
+Ammonia,,Departing survivors gain +1 survival.,Depart,1,
+Clan of Death,,"All newborn survivors gain: +1 ACC, +1 STR, +1 EVA.",Utility,,
+Pictograph,,"Anytime during the hunt or shodwown phase, a survivor may Run Away.",Utility,,
+Ultimate Weapon,,"When you defeat a monster, gain 1 monster resource of your choice from its resource deck.",,,1
+Bed,,,Endeavor,,1
+Shrine,,,Endeavor,,
+Drums,,,Endeavor,,
+Pottery,,"If the settlement loses all its resources, you may select up to two resources and keep them.",Utility,,1
+Final Fighting Art,,"Once per showdown, you may select a card from the discard pile or wound stack and place it on top of the AI deck.",Utility,,1
+Guidepost,,,Endeavor,1,
+Family,,"A newborn survivor inherits the surname of one parent, their weapon type and half (rounded down) of their weapon proficiency levels.",Utility,1,
+Face Painting,,,Endeavor,,
+Lantern Oven,,,Utility,1,
+Scarification,,,Endeavor,,
+Bloodletting,,,Endeavor,,
+Records,,,Endeavor,,
+Nightmare Training,,,Endeavor,,
+Storytelling,,,Endeavor,,1
+Symposium,,"When a survivor innovates, draw an additional 2 innovation cards to choose from.",Utility,,1
+Inner Lantrn,,All survivors gain the Surge survival action.,Survival Action,,
+Paint,,All survivors gain the Dash survival action.,Survival Action,,
+Sacrifice,,,Endeavor,,
+Forbidden Dance,,,Endeavor,,
+Saga,,All newborn survivors gain +2 hunt experience and +2 survival from knowing the epic.,Utility,,
+Partnership,,,Endeavor,,
+Cooking,,,Endeavor,,1
+Scrap Smelting,,,Endeavor,,
+Song of the Brave,,All non-deaf survivors add +1 to their roll results on the Overwheliming Darkness story event.,Utility,,
+Momento Mori,,,Endeavor,,
