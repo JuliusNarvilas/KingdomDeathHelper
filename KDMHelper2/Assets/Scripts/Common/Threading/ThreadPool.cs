@@ -162,6 +162,14 @@ namespace Common.Threading
         /// </summary>
         private readonly List<ThreadPoolJobTask> m_Tasks = new List<ThreadPoolJobTask>(5);
         /// <summary>
+        /// The thread pool task list change lock handle.
+        /// </summary>
+        private readonly object m_ThreadPoolMainThreadTaskLock = new object();
+        /// <summary>
+        /// The tasks to be processed on main thread.
+        /// </summary>
+        private readonly List<ThreadPoolJobTask> m_MainThreadTasks = new List<ThreadPoolJobTask>(5);
+        /// <summary>
         /// The list of active workers.
         /// </summary>
         private readonly List<ThreadPoolJob> m_ActiveThreadList = new List<ThreadPoolJob>();
@@ -226,6 +234,58 @@ namespace Common.Threading
             return result;
         }
 
+        public ThreadPoolTaskHandle AddTaskMainThread(Action i_Action)
+        {
+            ThreadPoolJobTask task = new ThreadPoolJobTask(i_Action, new TimeSpan(0, 5, 0), ThreadPriority.Normal);
+
+            lock (m_ThreadPoolMainThreadTaskLock)
+            {
+                m_Tasks.Add(task);
+            }
+            return new ThreadPoolTaskHandle(task);
+        }
+
+        public ThreadPoolTaskResult<TResult> AddTaskMainThread<TResult>(Func<TResult> i_Func)
+        {
+            ThreadPoolJobTask newTask;
+            var result = ThreadPoolTaskResult<TResult>.Create(i_Func, new TimeSpan(0, 5, 0), ThreadPriority.Normal, out newTask);
+
+            lock (m_ThreadPoolMainThreadTaskLock)
+            {
+                m_Tasks.Add(newTask);
+            }
+            return result;
+        }
+
+        public void TickMainThread()
+        {
+            if (m_MainThreadTasks.Count == 0)
+                return;
+
+            lock (m_ThreadPoolMainThreadTaskLock)
+            {
+                int count = m_MainThreadTasks.Count;
+                for (int i = 0; i < count; i++)
+                {
+                    var task = m_MainThreadTasks[i];
+                    task.State = EThreadedTaskState.InProgress;
+                    task.RunStartTimestamp = DateTime.UtcNow;
+                    try
+                    {
+                        task.RunFunc.Invoke();
+                        task.State = EThreadedTaskState.Succeeded;
+                    }
+                    catch (Exception e)
+                    {
+                        task.Exception = e;
+                        task.State = EThreadedTaskState.Errored;
+                    }
+                }
+
+                m_MainThreadTasks.Clear();
+            }
+        }
+
         /// <summary>
         /// Thread pool manager execution function.
         /// </summary>
@@ -270,27 +330,29 @@ namespace Common.Threading
         /// <returns></returns>
         private int GetEstimatedThreadCount()
         {
-            int lateTaskCount = 0;
-            lock (m_ThreadPoolTaskListChangeHandle)
-            {
-                DateTime now = DateTime.UtcNow;
-                int size = m_ClosingThreadList.Count;
-                ThreadPoolJobTask task;
-                for (int i = 0; i < size; ++i)
-                {
-                    task = m_ClosingThreadList[i].Task;
-                    if (task != null)
-                    {
-                        if ((task.ExpectedEndTimestamp - now).TotalMilliseconds > 0)
-                        {
-                            ++lateTaskCount;
-                        }
-                    }
-                }
-            }
+            return 1;
 
-            lateTaskCount /= 3;
-            return lateTaskCount <= 0 ? 1 : lateTaskCount;
+            //int lateTaskCount = 0;
+            //lock (m_ThreadPoolTaskListChangeHandle)
+            //{
+            //    DateTime now = DateTime.UtcNow;
+            //    int size = m_ClosingThreadList.Count;
+            //    ThreadPoolJobTask task;
+            //    for (int i = 0; i < size; ++i)
+            //    {
+            //        task = m_ClosingThreadList[i].Task;
+            //        if (task != null)
+            //        {
+            //            if ((task.ExpectedEndTimestamp - now).TotalMilliseconds > 0)
+            //            {
+            //                ++lateTaskCount;
+            //            }
+            //        }
+            //    }
+            //}
+
+            //lateTaskCount /= 3;
+            //return lateTaskCount <= 0 ? 1 : lateTaskCount;
         }
 
         /// <summary>

@@ -3,10 +3,12 @@
 --- !u!687078895 &4343727234628468602
 SpriteAtlas:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_Name: BlackIcons
   m_EditorData:
+    serializedVersion: 2
     textureSettings:
       serializedVersion: 2
       anisoLevel: 1
@@ -18,8 +20,19 @@ SpriteAtlas:
       readable: 0
       crunchedCompression: 0
       sRGB: 0
-    platformSettings: []
-    packingParameters:
+    platformSettings:
+    - serializedVersion: 2
+      m_BuildTarget: DefaultTexturePlatform
+      m_MaxTextureSize: 2048
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: -1
+      m_TextureCompression: 1
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 0
+      m_AndroidETC2FallbackOverride: 0
+    packingSettings:
       serializedVersion: 2
       padding: 4
       blockOffset: 1
@@ -28,70 +41,68 @@ SpriteAtlas:
       enableTightPacking: 0
     variantMultiplier: 1
     packables:
-    - {fileID: 2800000, guid: 51c9e2fd5e474dd478f2f72f622f656f, type: 3}
     - {fileID: 102900000, guid: 4f4e60a43ff63314c94ce69981da2730, type: 3}
     - {fileID: 10917, guid: 0000000000000000f000000000000000, type: 0}
     - {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
     - {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+    totalSpriteSurfaceArea: 1575936
     bindAsDefault: 1
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
-  - {fileID: 21300000, guid: 51c9e2fd5e474dd478f2f72f622f656f, type: 3}
-  - {fileID: 21300000, guid: 5b1de2688c723e7439b266703a9106d7, type: 3}
-  - {fileID: 21300000, guid: 4cf2453f11bf4b144913f4b88063ffc9, type: 3}
-  - {fileID: 21300000, guid: c0ec8d73f95f89a41aa05833a24a1609, type: 3}
-  - {fileID: 21300000, guid: 27f51f0aff8dabb478fa749a755421d2, type: 3}
-  - {fileID: 21300000, guid: 2f05e5de43d7e2747b2322f61ee0a8e6, type: 3}
-  - {fileID: 21300000, guid: b43c3713c4b991544afd29db0c8a443f, type: 3}
-  - {fileID: 21300000, guid: c8ca48f75690e9f4781c6d5f4b1fbd2e, type: 3}
-  - {fileID: 21300000, guid: 6e326910d87347d45925ed7bc187b400, type: 3}
-  - {fileID: 21300000, guid: 5631d972f17bd0645aeb7112f73b5914, type: 3}
-  - {fileID: 21300000, guid: d0831ebe9fc0f32459562338cbdbd778, type: 3}
-  - {fileID: 21300000, guid: 1d8e31cc87b24aa4fa6d70634b0920f5, type: 3}
-  - {fileID: 21300000, guid: a3667d6cd9e6b23438e6ca124a50cc5e, type: 3}
-  - {fileID: 21300000, guid: 7b97bc27716f1624da46b9be9208b5ea, type: 3}
-  - {fileID: 21300000, guid: 143ce007a45c09e45bedb21628446e99, type: 3}
-  - {fileID: 21300000, guid: 6faad65556b3b7546a5157a9682b5b09, type: 3}
-  - {fileID: 21300000, guid: e5e5a03dcae53684d8cb0be7406afe1a, type: 3}
-  - {fileID: 21300000, guid: 83333f18637f146459e9cab3df7c5876, type: 3}
-  - {fileID: 21300000, guid: 3fa11affc52f3eb449f4c2cb833dc1e1, type: 3}
-  - {fileID: 21300000, guid: c3d681fb77828874c80c6ef96fa5ab5f, type: 3}
-  - {fileID: 21300000, guid: 511a0fd335d40484e9fda1364e735ddd, type: 3}
-  - {fileID: 21300000, guid: 325f9738e60c86248963a6ba09d80550, type: 3}
-  - {fileID: 21300000, guid: bd35174f4d8d02a4aa78541140a52eee, type: 3}
-  - {fileID: 21300000, guid: acae1b35409aa624689d5bc3196cb34c, type: 3}
-  - {fileID: 21300000, guid: afb79a9a5a39b064782a417a7df7ff7a, type: 3}
+  - {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
   - {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
   - {fileID: 10917, guid: 0000000000000000f000000000000000, type: 0}
-  - {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 21300000, guid: 6e326910d87347d45925ed7bc187b400, type: 3}
+  - {fileID: 21300000, guid: 5631d972f17bd0645aeb7112f73b5914, type: 3}
+  - {fileID: 21300000, guid: b43c3713c4b991544afd29db0c8a443f, type: 3}
+  - {fileID: 21300000, guid: c0ec8d73f95f89a41aa05833a24a1609, type: 3}
+  - {fileID: 21300000, guid: 511a0fd335d40484e9fda1364e735ddd, type: 3}
+  - {fileID: 21300000, guid: acae1b35409aa624689d5bc3196cb34c, type: 3}
+  - {fileID: 21300000, guid: 6faad65556b3b7546a5157a9682b5b09, type: 3}
+  - {fileID: 21300000, guid: 143ce007a45c09e45bedb21628446e99, type: 3}
+  - {fileID: 21300000, guid: 7b97bc27716f1624da46b9be9208b5ea, type: 3}
+  - {fileID: 21300000, guid: c8ca48f75690e9f4781c6d5f4b1fbd2e, type: 3}
+  - {fileID: 21300000, guid: 83333f18637f146459e9cab3df7c5876, type: 3}
+  - {fileID: 21300000, guid: 325f9738e60c86248963a6ba09d80550, type: 3}
+  - {fileID: 21300000, guid: 5b1de2688c723e7439b266703a9106d7, type: 3}
+  - {fileID: 21300000, guid: 27f51f0aff8dabb478fa749a755421d2, type: 3}
+  - {fileID: 21300000, guid: afb79a9a5a39b064782a417a7df7ff7a, type: 3}
+  - {fileID: 21300000, guid: c3d681fb77828874c80c6ef96fa5ab5f, type: 3}
+  - {fileID: 21300000, guid: a3667d6cd9e6b23438e6ca124a50cc5e, type: 3}
+  - {fileID: 21300000, guid: 1d8e31cc87b24aa4fa6d70634b0920f5, type: 3}
+  - {fileID: 21300000, guid: e5e5a03dcae53684d8cb0be7406afe1a, type: 3}
+  - {fileID: 21300000, guid: d0831ebe9fc0f32459562338cbdbd778, type: 3}
+  - {fileID: 21300000, guid: 2f05e5de43d7e2747b2322f61ee0a8e6, type: 3}
+  - {fileID: 21300000, guid: 4cf2453f11bf4b144913f4b88063ffc9, type: 3}
+  - {fileID: 21300000, guid: bd35174f4d8d02a4aa78541140a52eee, type: 3}
+  - {fileID: 21300000, guid: 3fa11affc52f3eb449f4c2cb833dc1e1, type: 3}
   m_PackedSpriteNamesToIndex:
-  - Logo
-  - CampfireBlack 256
-  - SkullBlack 256
-  - PlusBlack 256
-  - BookBlack 256
-  - HeadBlack 256
-  - UpSharpBlack 256
-  - MaleBlack 256
-  - BrainBlack 256
-  - StrengthBlack 256
-  - PopulationBlack 256
-  - LuckBlack 256
-  - WeaponMasteryBlack 256
-  - WaistBlack 256
-  - AccuracyBlack 256
-  - TimelineBlack 256
-  - FemaleBlack 256
-  - SwordBlack 256
-  - SwordBlack 256
-  - EvasionBlack 256
-  - GenderBlack 256
-  - BodyBlack 256
-  - LegsBlack 256
-  - SpeedBlack 256
-  - HandBlack 256
+  - UISprite
   - Background
   - UIMask
-  - UISprite
+  - BrainBlack 256
+  - StrengthBlack 256
+  - UpSharpBlack 256
+  - PlusBlack 256
+  - GenderBlack 256
+  - SpeedBlack 256
+  - TimelineBlack 256
+  - AccuracyBlack 256
+  - WaistBlack 256
+  - MaleBlack 256
+  - SwordBlack 256
+  - BodyBlack 256
+  - CampfireBlack 256
+  - BookBlack 256
+  - HandBlack 256
+  - EvasionBlack 256
+  - WeaponMasteryBlack 256
+  - LuckBlack 256
+  - FemaleBlack 256
+  - PopulationBlack 256
+  - HeadBlack 256
+  - SkullBlack 256
+  - LegsBlack 256
+  - SwordBlack 256
   m_Tag: BlackIcons
   m_IsVariant: 0

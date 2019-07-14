@@ -16,6 +16,8 @@ namespace Common.IO
             {
                 output.Write(buffer, 0, len);
             }
+
+            output.Flush();
         }
     }
 }

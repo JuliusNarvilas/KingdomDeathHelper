@@ -69,7 +69,7 @@ namespace Common.IO.FileHelpers
                 m_State = EState.Loading;
                 m_absoluteFilePath = string.Format("{0}/{1}", Application.persistentDataPath, m_FilePath);
 
-                ThreadPool.Instance.AddTask(AsyncLoadProcessing);
+                ThreadPool.Instance.AddTask(LoadProcessing);
             }
         }
 
@@ -80,11 +80,11 @@ namespace Common.IO.FileHelpers
                 m_State = EState.Loading;
                 m_absoluteFilePath = string.Format("{0}/{1}", Application.persistentDataPath, m_FilePath);
 
-                AsyncLoadProcessing();
+                LoadProcessing();
             }
         }
 
-        private void AsyncLoadProcessing()
+        private void LoadProcessing()
         {
             if (File.Exists(m_absoluteFilePath))
             {

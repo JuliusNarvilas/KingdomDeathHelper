@@ -26,19 +26,7 @@ namespace Common.IO.FileHelpers.FileLoadSpecializations
             using (var streamReader = new StreamReader(file))
             {
                 string content = streamReader.ReadToEnd();
-                fgCSVReader.LoadFromString(content, new fgCSVReader.ReadLineDelegate(ReadLineFunc));
-            }
-        }
-
-        private void ReadLineFunc(int i_LineIndex, List<string> i_Line)
-        {
-            if (i_LineIndex == 0)
-            {
-                m_Result = new CSVData(i_Line.ToArray());
-            }
-            else
-            {
-                m_Result.AddContentRow(i_Line.ToArray());
+                m_Result = CSVData.Parse(content);
             }
         }
     }

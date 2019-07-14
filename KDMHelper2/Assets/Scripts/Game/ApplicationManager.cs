@@ -19,6 +19,7 @@ using System.Xml;
 using System.Xml.Serialization;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Common.Threading;
 
 namespace Game
 {
@@ -77,18 +78,65 @@ namespace Game
             StartCoroutine(Load());
         }
 
+
+
+        private static void ProcessScript(string script)
+        {
+            string errorMsg = null;
+            SplitAndMerge.Variable result = null;
+
+            try
+            {
+                result = SplitAndMerge.Interpreter.Instance.Process(script, null, true);
+            }
+            catch (Exception exc)
+            {
+                errorMsg = exc.InnerException != null ? exc.InnerException.Message : exc.Message;
+                SplitAndMerge.ParserFunction.InvalidateStacksAfterLevel(0);
+            }
+
+            string output = SplitAndMerge.Interpreter.Instance.Output;
+            if (!string.IsNullOrEmpty(output))
+            {
+                Console.WriteLine(output);
+            }
+            else if (result != null)
+            {
+                output = result.AsString(false, false);
+                if (!string.IsNullOrEmpty(output))
+                {
+                    Console.WriteLine(output);
+                }
+            }
+
+            if (!string.IsNullOrEmpty(errorMsg))
+            {
+                Log.DebugLogError(errorMsg + Environment.NewLine);
+                errorMsg = string.Empty;
+            }
+        }
+
+
         private void Start()
         {
 
 
 
 
+            string scriptBody = @"
 
 
+print(""ScriptRunning"");
 
 
+";
 
+            SplitAndMerge.Interpreter.Instance.OnOutput += (object sender, SplitAndMerge.OutputAvailableEventArgs args) =>
+            {
+                Log.DebugLog(args.Output);
+            };
 
+            ProcessScript(scriptBody);
 
 
 
@@ -378,6 +426,8 @@ namespace Game
                     OnScreenSizeChange();
                 }
             }
+
+            ThreadPool.Instance.TickMainThread();
         }
 
         private void OnApplicationQuit()

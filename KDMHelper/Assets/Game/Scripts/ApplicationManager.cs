@@ -1,8 +1,4 @@
-﻿using Assets.Common.IO.FileHelpers;
-using Assets.Common.IO.FileHelpers.FileLoadSpecializations;
-using Assets.Game.Model.Config;
-using Assets.Game.Scripts.DisplayHandler;
-using Common;
+﻿using Common;
 using Common.IO;
 using Common.Properties.Enumeration;
 using Common.Properties.String;
@@ -52,8 +48,8 @@ namespace Game
         public InfoDBController InfoDB { get { return m_InfoDB; } }
 
         [SerializeField]
-        private DisplayHandlerDB m_displayHandlerDB;
-        public DisplayHandlerDB DisplayHandlerDB { get { return m_displayHandlerDB; } }
+        //private DisplayHandlerDB m_displayHandlerDB;
+        //public DisplayHandlerDB DisplayHandlerDB { get { return m_displayHandlerDB; } }
 
 
         private string m_PersistentDataPath;

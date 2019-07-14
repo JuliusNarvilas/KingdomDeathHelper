@@ -69,6 +69,30 @@ namespace Common.IO.FileHelpers.CSV
             return result;
         }
 
+        public static CSVData Parse(string content)
+        {
+            CSVData result = null;
+
+            if (!string.IsNullOrEmpty(content))
+            {
+                Action<int, List<string>> ReadLineFunc = (int i_LineIndex, List<string> i_Line) =>
+                {
+                    if (i_LineIndex == 0)
+                    {
+                        result = new CSVData(i_Line.ToArray());
+                    }
+                    else
+                    {
+                        result.AddContentRow(i_Line.ToArray());
+                    }
+                };
+
+                fgCSVReader.LoadFromString(content, new fgCSVReader.ReadLineDelegate(ReadLineFunc));
+            }
+
+            return result;
+        }
+
 
         protected string[] m_ColumnNames;
         public string[] ColumnNames { get { return m_ColumnNames; } }
@@ -131,22 +155,30 @@ namespace Common.IO.FileHelpers.CSV
             return CSVRow.FindRow(this, i_ColumnName, i_ValueMatch, caseSensitive, containsMatch);
         }
 
-        public List<CSVRow> FindAll(string i_ColumnName, string i_ValueMatch, bool caseSensitive = false, bool containsMatch = false)
+        public void FindAll(List<CSVRow> o_Result, string i_ColumnName, string i_ValueMatch, bool i_CaseSensitive = false, bool i_ContainsMatch = false)
         {
-            var result = new List<CSVRow>();
+            if (o_Result == null)
+                return;
+
             CSVRow currentRecord = new CSVRow(null, null, -1);
             while (true)
             {
-                currentRecord = CSVRow.FindRow(this, i_ColumnName, i_ValueMatch, caseSensitive, containsMatch, currentRecord.Index + 1);
+                currentRecord = CSVRow.FindRow(this, i_ColumnName, i_ValueMatch, i_CaseSensitive, i_ContainsMatch, currentRecord.Index + 1);
                 if (currentRecord.Index >= 0)
                 {
-                    result.Add(currentRecord);
+                    o_Result.Add(currentRecord);
                 }
                 else
                 {
                     break;
                 }
             }
+        }
+
+        public List<CSVRow> FindAll(string i_ColumnName, string i_ValueMatch, bool i_CaseSensitive = false, bool i_ContainsMatch = false)
+        {
+            var result = new List<CSVRow>();
+            FindAll(result, i_ColumnName, i_ValueMatch, i_CaseSensitive, i_ContainsMatch);
             return result;
         }
 

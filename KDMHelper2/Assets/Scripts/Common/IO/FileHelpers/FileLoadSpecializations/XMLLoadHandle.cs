@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Xml;
 
 namespace Common.IO.FileHelpers.FileLoadSpecializations
 {
@@ -31,6 +32,10 @@ namespace Common.IO.FileHelpers.FileLoadSpecializations
         {
             return m_Result as T;
         }
+        public Type GetResultType()
+        {
+            return m_resultType;
+        }
         
         public XMLLoadHandle(Type resultType, string filePath) : base(filePath)
         {
@@ -40,6 +45,32 @@ namespace Common.IO.FileHelpers.FileLoadSpecializations
         protected override void LoadFunc(Stream file)
         {
             m_Result = XMLHelpers.Deserialise(file, m_resultType);
+        }
+
+    }
+
+
+    public class XMLDocLoadHandle : FileLoadHandle
+    {
+        protected XmlDocument m_Result;
+
+        public override object GetResult()
+        {
+            return m_Result;
+        }
+        public XmlDocument GetResultXmlDoc()
+        {
+            return m_Result;
+        }
+
+        public XMLDocLoadHandle(Type resultType, string filePath) : base(filePath)
+        {
+            m_Result = new XmlDocument();
+        }
+
+        protected override void LoadFunc(Stream file)
+        {
+            m_Result.Load(file);
         }
 
     }
